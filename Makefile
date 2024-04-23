@@ -57,8 +57,8 @@ help:
 	@echo ""
 
 PLATFORM := `uname -o`
-REPO := "<REPO-NAME-HERE>"
-PROJECT_SRC := "<SRC-FOLDER-HERE>"
+REPO := "graph-py"
+PROJECT_SRC := "src/graph"
 
 ifeq (${VIRTUAL_ENV},)
   VENV_NAME = .venv
