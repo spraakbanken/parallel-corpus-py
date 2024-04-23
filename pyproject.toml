@@ -5,7 +5,9 @@ description = "TBD"
 authors = [
     {name = "Kristoffer Andersson", email = "kristoffer.andersson@gu.se"},
 ]
-dependencies = []
+dependencies = [
+    "diff-match-patch>=20230430",
+]
 requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "MIT"}
