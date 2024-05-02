@@ -1,0 +1,63 @@
+# name: test_edit_range[-01]
+  dict({
+    'from': 0,
+    'insert': '01',
+    'to': 0,
+  })
+# ---
+# name: test_edit_range[0123456789-0189]
+  dict({
+    'from': 2,
+    'insert': '',
+    'to': 8,
+  })
+# ---
+# name: test_edit_range[0123456789-01]
+  dict({
+    'from': 2,
+    'insert': '',
+    'to': 10,
+  })
+# ---
+# name: test_edit_range[0123456789-01xyz89]
+  dict({
+    'from': 2,
+    'insert': 'xyz',
+    'to': 8,
+  })
+# ---
+# name: test_edit_range[0123456789-01xyz]
+  dict({
+    'from': 2,
+    'insert': 'xyz',
+    'to': 10,
+  })
+# ---
+# name: test_edit_range[0123456789-89]
+  dict({
+    'from': 0,
+    'insert': '',
+    'to': 8,
+  })
+# ---
+# name: test_edit_range[0123456789-]
+  dict({
+    'from': 0,
+    'insert': '',
+    'to': 10,
+  })
+# ---
+# name: test_edit_range[0123456789-xyz89]
+  dict({
+    'from': 0,
+    'insert': 'xyz',
+    'to': 8,
+  })
+# ---
+# name: test_edit_range[0123456789-xyz]
+  dict({
+    'from': 0,
+    'insert': 'xyz',
+    'to': 10,
+  })
+# ---

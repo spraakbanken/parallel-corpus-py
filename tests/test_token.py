@@ -1,14 +1,14 @@
 from typing import List
 
 import pytest
-from sbx_ocr_correction_viklofg_sweocr.graph.token import Token, identify, tokenize
+from graph.token import Token, identify, tokenize
 
 
 def test_can_create_token() -> None:
     token = Token(text="a text", id="s0")
 
-    assert token["id"] == "s0"
-    assert token["text"] == "a text"
+    assert token.id == "s0"
+    assert token.text == "a text"
 
 
 @pytest.mark.parametrize(
@@ -31,6 +31,6 @@ def test_tokenize(text: str, expected: List[str], snapshot) -> None:
 
 def test_identify() -> None:
     assert identify(["apa", "bepa"], "#") == [
-        {"text": "apa", "id": "#0"},
-        {"text": "bepa", "id": "#1"},
+        Token(text="apa", id="#0"),
+        Token(text="bepa", id="#1"),
     ]
