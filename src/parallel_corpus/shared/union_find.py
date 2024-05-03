@@ -32,7 +32,6 @@ class UnionFind(UnionFindOperations[int]):
     def find(self, x: int) -> int:
         while x >= len(self._rev):
             self._rev.append(None)
-            print(f"{self._rev=}")
         if self._rev[x] is None:
             self._rev[x] = x
         elif self._rev[x] != x:

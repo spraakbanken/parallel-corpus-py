@@ -1,4 +1,3 @@
-import functools
 import itertools
 import logging
 import re
@@ -55,7 +54,6 @@ class Graph(SourceTarget[List[Token]]):
         return Graph(source=source, target=target, edges=edges, comment=self.comment)
 
     def copy_with_edges(self, edges: Edges) -> Self:
-        print(f"Graph.copy_with_edges; self={self}")
         return Graph(source=self.source, target=self.target, edges=edges, comment=self.comment)
 
 
@@ -86,7 +84,6 @@ def edge_record(es: List[Edge]) -> Dict[str, Edge]:
 
 
 def init(s: str, *, manual: bool = False) -> Graph:
-    print(f"graph.init; {s=}")
     return init_from(token.tokenize(s), manual=manual)
 
 
@@ -116,7 +113,6 @@ def merge_edges(*es) -> Edge:
     manual = False
     comments = []
     for e in es:
-        print(f"{e=}")
         ids.extend(iter(e.ids))
         labels.extend(iter(e.labels))
         manual = manual or e.manual
@@ -134,7 +130,6 @@ zero_edge = merge_edges()
 
 
 def align(g: Graph) -> Graph:
-    print(f"align start; graph={g}")
     # Use a union-find to group characters into edges.
     uf = parallel_corpus.shared.union_find.poly_union_find(lambda u: u)
     em = edge_map(g)
@@ -147,9 +142,7 @@ def align(g: Graph) -> Graph:
         ),
     )
     char_diff = diffs.hdiff(chars.source, chars.target, lambda u: u.char, lambda u: u.char)
-    print(f"{char_diff=}")
     for c in char_diff:
-        # print(f"{c=}")
         # these undefined makes the alignment skip spaces.
         # they originate from to_char_ids
         if c.change == diffs.ChangeType.CONSTANT and (c.a.id is not None and c.b.id is not None):
@@ -163,24 +156,12 @@ def align(g: Graph) -> Graph:
             if not e_repr.manual:
                 labels = e_repr.labels if first(e_repr.id) else []
                 e_token = edge([tok.id], labels, manual=False, comment=e_repr.comment)
-                # print(f"{e_repr.comment=}")
                 dicts.modify(
                     proto_edges, uf.find(tok.id), zero_edge, lambda e: merge_edges(e, e_token)
                 )
-                # key = uf.find(tok.id)
-                # print(f"{key=}")
-                # e1 = proto_edges.get(key) or zero_edge
-                # proto_edges[key] = merge_edges(e1, e_token)
-                # print(f"{proto_edges[key]=}")
-                # k = uf.find(token.id)
-                # if k is None or k not in proto_edges:
-                #     raise NotImplementedError("?")
-                # else:
 
     map_sides(g, update_edges)
-    print(f"align after map_sides; graph={g}")
     edges = edge_record(dicts.traverse(proto_edges, lambda e, _: e))
-    print(f"{edges=}")
     return g.copy_with_edges(edges)
 
 
@@ -214,22 +195,19 @@ def edge_map(g: Graph) -> Dict[str, Edge]:
 
 
 def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:
-    print(f"graph.unaligned_set_side; graph={g}, {side=}, {text=}")
     text0 = get_side_text(g, side)
     edits = parallel_corpus.shared.ranges.edit_range(text0, text)
-    print(f"graph.unaligned_set_side; {edits=}")
 
     from_, to = edits["from"], edits["to"]
     new_text = text[from_ : (len(text) - (len(text0) - to))]
-    print(f"graph.unaligned_set_side; {new_text=}")
     return unaligned_modify(g, from_, to, new_text, side)
 
 
 def unaligned_modify(g: Graph, from_: int, to: int, text: str, side: Side = "target") -> Graph:
     """Replace the text at some position, merging the spans it touches upon.
 
-    >>> show = lambda g: list(map(lambda t: t["text"], g["target"]))
-    >>> ids = lambda g: " ".join(map(lambda t: t["id"], g["target"]))
+    >>> show = lambda g: [t.text for t in g.target]
+    >>> ids = lambda g: " ".join(t.id for t in g.target)
     >>> g = init('test graph hello')
     >>> assert show(g) == ['test ', 'graph ', 'hello ']
     >>> show(unaligned_modify(g, 0, 0, 'new'))
@@ -253,14 +231,14 @@ def unaligned_modify(g: Graph, from_: int, to: int, text: str, side: Side = "tar
     >>> show(unaligned_modify(g, 0, 15, '_'))
     ['_o ']
 
-    >>> show(unaligned_modify(g, 0, 16, '_')) /
-    > ['_ ']
+    >>> show(unaligned_modify(g, 0, 16, '_'))
+    ['_ ']
 
-    >>> show(unaligned_modify(g, 0, 17, '_')) /
-    > ['_ ']
+    >>> show(unaligned_modify(g, 0, 17, '_'))
+    ['_ ']
 
     >>> show(unaligned_modify(g, 16, 16, ' !'))
-     => ['test ', 'graph ', 'hello ', '! ']
+    ['test ', 'graph ', 'hello ', '! ']
 
 
     Indexes are character offsets (use CodeMirror's doc.posFromIndex and doc.indexFromPos to convert)
@@ -269,18 +247,12 @@ def unaligned_modify(g: Graph, from_: int, to: int, text: str, side: Side = "tar
     tokens = get_side_texts(g, side)
     token_at = token.token_at(tokens, from_)
     from_token, from_ix = token_at["token"], token_at["offset"]
-    # const {token: from_token, offset: from_ix} = T.token_at(tokens, from)
-    # const pre = (tokens[from_token] || '').slice(0, from_ix)
     pre = (tokens[from_token] or "")[:from_ix]
     if to == len(get_side_text(g, side)):
-        #     return unaligned_modify_tokens(g, from_token, g[side].length, pre + text, side)
         return unaligned_modify_tokens(g, from_token, len(g.get_side(side)), pre + text, side)
-    #     const {token: to_token, offset: to_ix} = T.token_at(tokens, to)
     to_token_at = token.token_at(tokens, to)
     to_token, to_ix = to_token_at["token"], to_token_at["offset"]
-    #     const post = (tokens[to_token] || '').slice(to_ix)
     post = (tokens[to_token] or "")[to_ix:]
-    #     return unaligned_modify_tokens(g, from_token, to_token + 1, pre + text + post, side)
     return unaligned_modify_tokens(g, from_token, to_token + 1, pre + text + post, side)
 
 
@@ -334,84 +306,46 @@ def unaligned_modify_tokens(
     ):
         raise ValueError(f"Invalid coordinates {g} {from_} {to} {text}")
 
-    #   if (from < 0 || to < 0 || from > g[side].length || to > g[side].length || from > to) {
-    #     throw new Error('Invalid coordinates ' + Utils.show({g, from, to, text}))
-    #    }
-    #   if (text.match(/^\s+$/)) {
     if _ := ALL_WHITESPACE.fullmatch(text):
         # replacement text is only whitespace: need to find some token to put it on
-        #     if (from > 0) {
         if from_ > 0:
-            # return unaligned_modify_tokens(g, from - 1, to, g[side][from - 1].text + text, side)
             return unaligned_modify_tokens(
                 g, from_ - 1, to, g.get_side(side)[from_ - 1].text + text, side
             )
         elif to < len(g.get_side(side)):
-            #     } else if (to < g[side].length) {
-            #       return unaligned_modify_tokens(g, from, to + 1, text + g[side][to].text, side)
             return unaligned_modify_tokens(
                 g, from_, to + 1, text + g.get_side(side)[to].text, side
             )
 
-        #     } else {
         else:
-            #       // console.warn('Introducing whitespace into empty graph')
             logger.warn("Introducing whitespace into empty graph")
 
-    #     }
-    #   }
-    #   if (text.match(/\S$/) && to < g[side].length) {
     if NO_WHITESPACE_AT_END.match(text[-1:]) is not None and to < len(g.get_side(side)):
         #     if replacement text does not end with whitespace, grab the next word as well
-        #     return unaligned_modify_tokens(g, from, to + 1, text + g[side][to].text, side)
         return unaligned_modify_tokens(g, from_, to + 1, text + g.get_side(side)[to].text, side)
 
-    #   }
-
-    #   if (from > 0 && from == g[side].length && to === g[side].length) {
     if from_ > 0 and from_ == len(g.get_side(side)) and to == len(g.get_side(side)):
         # we're adding a word at the end but the last token might not end in whitespace:
         # glue them together
 
-        #     return unaligned_modify_tokens(g, from - 1, to, g[side][from - 1].text + text, side)
         return unaligned_modify_tokens(
             g, from_ - 1, to, g.get_side(side)[from_ - 1].text + text, side
         )
 
-    #   }
-
-    #   const id_offset = next_id(g)
     id_offset = next_id(g)
 
-    #   const tokens = T.tokenize(text).map((t, i) => Token(t, side[0] + (id_offset + i)))
     tokens = [
         Token(t, f"{side[0]}{(id_offset + i)}") for i, t in enumerate(token.tokenize(text))
     ]
 
-    #   const [new_tokens, removed] = Utils.splice(g[side], from, to - from, ...tokens)
     new_tokens, removed = lists.splice(g.get_side(side), from_, to - from_, *tokens)
 
-    #   const ids_removed = new Set(removed.map(t => t.id))
     ids_removed = {t.id for t in removed}
-    print(ids_removed)
 
-    #   const new_edge_ids = new Set<string>(tokens.map(t => t.id))
     new_edge_ids = {t.id for t in tokens}
-    #   const new_edge_labels = new Set<string>()
     new_edge_labels = set()
-    #   let new_edge_manual = false
     new_edge_manual = False
 
-    #   const edges = record.filter(g.edges, e => {
-    #     if (e.ids.some(id => ids_removed.has(id))) {
-    #       e.ids.forEach(id => ids_removed.has(id) || new_edge_ids.add(id))
-    #       e.labels.forEach(lbl => new_edge_labels.add(lbl))
-    #       new_edge_manual = new_edge_manual || e.manual === true
-    #       return false
-    #     } else {
-    #       return true
-    #     }
-    #   })
     def fun(e: Edge, _id: str) -> bool:
         if any(id_ in ids_removed for id_ in e.ids):
             for id_ in e.ids:
@@ -424,15 +358,10 @@ def unaligned_modify_tokens(
 
     edges = dicts.filter_dict(g.edges, fun)
 
-    #   if (new_edge_ids.size > 0) {
-    #     const e = Edge([...new_edge_ids], [...new_edge_labels], new_edge_manual)
-    #     edges[e.id] = e
-    #   }
     if new_edge_ids:
         e = edge(list(new_edge_ids), list(new_edge_labels), manual=new_edge_manual)
         edges[e.id] = e
 
-    #   return {...g, [side]: new_tokens, edges}
     return g.copy_with_updated_side_and_edges(side, new_tokens, edges)
 
 

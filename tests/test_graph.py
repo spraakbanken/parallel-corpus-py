@@ -20,7 +20,6 @@ def test_graph_case1() -> None:
     second = "Jonat han saknades , emedan han , med sin vapendragare , redan på annat håll sökt och anträffat fienden ."  # noqa: E501
 
     g = graph.init(first)
-    print(f"{g=}")
 
     gm = graph.set_target(g, second)
     print(f"{gm=}")

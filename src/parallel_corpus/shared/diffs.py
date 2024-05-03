@@ -46,7 +46,7 @@ class Change(Generic[A, B]):
         return cls(ChangeType.INSERTED, b=b)
 
     def model_dump(self) -> dict[str, Union[int, A, B]]:
-        out = {
+        out: Dict[str, Union[int, A, B]] = {
             "change": int(self.change),
         }
         if self.a is not None:
