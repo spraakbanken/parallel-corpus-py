@@ -15,6 +15,18 @@ def test_graph_init() -> None:
     assert g.edges == edges
 
 
+def test_graph_case1() -> None:
+    first = "Jonathan saknades , emedan han , med sin vapendragare , redan på annat håll sökt och anträffat fienden ."  # noqa: E501
+    second = "Jonat han saknades , emedan han , med sin vapendragare , redan på annat håll sökt och anträffat fienden ."  # noqa: E501
+
+    g = graph.init(first)
+    print(f"{g=}")
+
+    gm = graph.set_target(g, second)
+    print(f"{gm=}")
+    assert "e-s0-t19-t20" in gm.edges
+
+
 def test_unaligned_set_side() -> None:
     g0 = graph.init("a bc d")
     print(">>> test_unaligned_set_side")

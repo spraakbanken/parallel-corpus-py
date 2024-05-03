@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, TypeVar
 
 from typing_extensions import Self
 
+import graph.shared.ranges
 import graph.shared.str_map
 import graph.shared.union_find
 from graph import shared, token
@@ -101,6 +102,14 @@ def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
     )
 
 
+def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:
+    return align(unaligned_modify(g, from_, to, text, side))
+
+
+def set_target(g: Graph, text: str) -> Graph:
+    return align(unaligned_set_side(g, Side.target, text))
+
+
 def merge_edges(*es) -> Edge:
     ids = []
     labels = []
@@ -175,6 +184,14 @@ def align(g: Graph) -> Graph:
     return g.copy_with_edges(edges)
 
 
+def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
+    return align(unaligned_rearrange(g, begin, end, dest))
+
+
+def target_text(g: SourceTarget[List[token.Text]]) -> str:
+    return token.text(g.target)
+
+
 @dataclass
 class CharIdPair:
     char: str
@@ -199,9 +216,12 @@ def edge_map(g: Graph) -> Dict[str, Edge]:
 def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:
     print(f"graph.unaligned_set_side; graph={g}, {side=}, {text=}")
     text0 = get_side_text(g, side)
-    edits = shared.edit_range(text0, text)
+    edits = graph.shared.ranges.edit_range(text0, text)
+    print(f"graph.unaligned_set_side; {edits=}")
+
     from_, to = edits["from"], edits["to"]
     new_text = text[from_ : (len(text) - (len(text0) - to))]
+    print(f"graph.unaligned_set_side; {new_text=}")
     return unaligned_modify(g, from_, to, new_text, side)
 
 
@@ -211,8 +231,7 @@ def unaligned_modify(g: Graph, from_: int, to: int, text: str, side: Side = "tar
     >>> show = lambda g: list(map(lambda t: t["text"], g["target"]))
     >>> ids = lambda g: " ".join(map(lambda t: t["id"], g["target"]))
     >>> g = init('test graph hello')
-    >>> show(g)
-    ['test ', 'graph ', 'hello ']
+    >>> assert show(g) == ['test ', 'graph ', 'hello ']
     >>> show(unaligned_modify(g, 0, 0, 'new'))
     ['newtest ', 'graph ', 'hello ']
 
@@ -417,4 +436,18 @@ def unaligned_modify_tokens(
     return g.copy_with_updated_side_and_edges(side, new_tokens, edges)
 
 
-# }
+def unaligned_rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
+    """Moves a slice of the target tokens and puts it at a new destination.
+
+      target_text(unaligned_rearrange(init('apa bepa cepa depa'), 1, 2, 0)) // => 'bepa cepa apa depa '
+
+    Indexes are token offsets"""
+    em = edge_map(g)
+    edge_ids_to_update = {em[t.id].id for t in g.target[begin : (end + 1)]}
+    new_edges = {}
+    new_edges.update(g.edges)
+    for id_ in edge_ids_to_update:
+        new_edges[id_] = merge_edges(g.edges[id_], edge([], [], manual=True))
+    return g.copy_with_updated_side_and_edges(
+        "target", lists.rearrange(g.target, begin, end, dest), new_edges
+    )
