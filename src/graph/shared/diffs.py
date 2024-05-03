@@ -1,12 +1,12 @@
 import enum
 import itertools
-from typing import Callable, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Callable, Dict, Generic, List, Optional, Tuple, TypeVar, Union
 
 import diff_match_patch as dmp_module
 from typing_extensions import Self
 
-from graph.source_target import Side
 from graph.shared.str_map import str_map
+from graph.source_target import Side
 
 dmp = dmp_module.diff_match_patch()
 
@@ -140,3 +140,9 @@ def hdiff(
         out.extend(changes)
     return out
     return list(itertools.chain(*(map_change(change, cs) for change, cs in d)))
+
+
+def token_diff(s1: str, s2: str) -> List[Tuple[int, str]]:
+    d = dmp.diff_main(s1, s2)
+    dmp.diff_cleanupSemantic(d)
+    return d

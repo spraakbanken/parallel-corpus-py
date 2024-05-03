@@ -15,11 +15,88 @@ def test_graph_init() -> None:
     assert g.edges == edges
 
 
+def test_unaligned_set_side() -> None:
+    g0 = graph.init("a bc d")
+    print(">>> test_unaligned_set_side")
+    g = graph.unaligned_set_side(g0, "target", "ab c d")
+    print("<<< test_unaligned_set_side")
+
+    expected_source = [
+        token.Token(id="s0", text="a "),
+        token.Token(id="s1", text="bc "),
+        token.Token(id="s2", text="d "),
+    ]
+    expected_g0_target = [
+        token.Token(id="t0", text="a "),
+        token.Token(id="t1", text="bc "),
+        token.Token(id="t2", text="d "),
+    ]
+    expected_g_target = [
+        token.Token(id="t3", text="ab "),
+        token.Token(id="t4", text="c "),
+        token.Token(id="t5", text="d "),
+    ]
+    expected_g_edges = {
+        "e-s0-s1-s2-t3-t4-t5": graph.Edge(
+            id="e-s0-s1-s2-t3-t4-t5",
+            ids=["s0", "s1", "s2", "t3", "t4", "t5"],
+            labels=[],
+            manual=False,
+        ),
+    }
+
+    assert g0.source == expected_source
+    assert g0.target == expected_g0_target
+    assert g.source == expected_source
+    assert g.target == expected_g_target
+    assert g.edges == expected_g_edges
+
+
 def test_graph_align() -> None:
     g0 = graph.init("a bc d")
+
     g = graph.unaligned_set_side(g0, "target", "ab c d")
 
-    assert len(graph.align(g).edges) == 2
+    expected_source = [
+        token.Token(id="s0", text="a "),
+        token.Token(id="s1", text="bc "),
+        token.Token(id="s2", text="d "),
+    ]
+    expected_g0_target = [
+        token.Token(id="t0", text="a "),
+        token.Token(id="t1", text="bc "),
+        token.Token(id="t2", text="d "),
+    ]
+    expected_g_target = [
+        token.Token(id="t3", text="ab "),
+        token.Token(id="t4", text="c "),
+        token.Token(id="t5", text="d "),
+    ]
+    expected_g_edges = {
+        "e-s0-s1-s2-t3-t4-t5": graph.Edge(
+            id="e-s0-s1-s2-t3-t4-t5",
+            ids=["s0", "s1", "s2", "t3", "t4", "t5"],
+            labels=[],
+            manual=False,
+        ),
+    }
+    expected_g_aligned_edges = {
+        "e-s0-s1-t3-t4": graph.Edge(
+            id="e-s0-s1-t3-t4", ids=["s0", "s1", "t3", "t4"], labels=[], manual=False
+        ),
+        "e-s2-t5": graph.Edge(id="e-s2-t5", ids=["s2", "t5"], labels=[], manual=False),
+    }
+
+    assert g0.source == expected_source
+    assert g0.target == expected_g0_target
+    assert g.source == expected_source
+    assert g.target == expected_g_target
+    assert g.edges == expected_g_edges
+    g_aligned = graph.align(g)
+    assert g_aligned.source == expected_source
+    assert g_aligned.target == expected_g_target
+    assert g_aligned.edges == expected_g_aligned_edges
+    assert len(g_aligned.edges) == 2
 
 
 def show(g: graph.Graph) -> List[str]:
@@ -144,3 +221,12 @@ def test_unaligned_modify_tokens_ids_source(from_: int, to: int, text: str, snap
 #   const idsS = (g: Graph) => g.source.map(t => t.id).join(' ')
 #   showS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source')) // => ['this ', 'test ', 'graph ', 'hello ']
 #   idsS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source'))  // => 's3 s0 s1 s2'
+
+
+def test_unaligned_rearrange() -> None:
+    g = graph.init("apa bepa cepa depa")
+    gr = graph.unaligned_rearrange(g, 1, 2, 0)
+    assert graph.target_text(gr) == "bepa cepa apa depa "
+
+
+# target_text(unaligned_rearrange(init(), 1, 2, 0)) // =>
