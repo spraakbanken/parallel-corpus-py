@@ -7,14 +7,14 @@ from typing import Dict, List, Optional, TypeVar
 
 from typing_extensions import Self
 
-import graph.shared.ranges
-import graph.shared.str_map
-import graph.shared.union_find
-from graph import shared, token
-from graph.shared import dicts, diffs, ids, lists
-from graph.shared.unique_check import UniqueCheck
-from graph.source_target import Side, SourceTarget, map_sides
-from graph.token import Token
+import parallel_corpus.shared.ranges
+import parallel_corpus.shared.str_map
+import parallel_corpus.shared.union_find
+from parallel_corpus import shared, token
+from parallel_corpus.shared import dicts, diffs, ids, lists
+from parallel_corpus.shared.unique_check import UniqueCheck
+from parallel_corpus.source_target import Side, SourceTarget, map_sides
+from parallel_corpus.token import Token
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -136,7 +136,7 @@ zero_edge = merge_edges()
 def align(g: Graph) -> Graph:
     print(f"align start; graph={g}")
     # Use a union-find to group characters into edges.
-    uf = graph.shared.union_find.poly_union_find(lambda u: u)
+    uf = parallel_corpus.shared.union_find.poly_union_find(lambda u: u)
     em = edge_map(g)
     chars = map_sides(
         g,
@@ -199,7 +199,7 @@ class CharIdPair:
 
 
 def to_char_ids(token: Token) -> List[CharIdPair]:
-    return graph.shared.str_map.str_map(
+    return parallel_corpus.shared.str_map.str_map(
         token.text,
         lambda char, _i: CharIdPair(char=char, id=None if char == " " else token.id),
     )
@@ -216,7 +216,7 @@ def edge_map(g: Graph) -> Dict[str, Edge]:
 def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:
     print(f"graph.unaligned_set_side; graph={g}, {side=}, {text=}")
     text0 = get_side_text(g, side)
-    edits = graph.shared.ranges.edit_range(text0, text)
+    edits = parallel_corpus.shared.ranges.edit_range(text0, text)
     print(f"graph.unaligned_set_side; {edits=}")
 
     from_, to = edits["from"], edits["to"]

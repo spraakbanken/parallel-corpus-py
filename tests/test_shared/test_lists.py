@@ -1,4 +1,4 @@
-from graph.shared import lists
+from parallel_corpus.shared import lists
 
 
 def test_splice_1():

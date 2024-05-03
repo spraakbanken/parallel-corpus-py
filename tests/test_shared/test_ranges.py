@@ -1,5 +1,5 @@
 import pytest
-from graph.shared.ranges import edit_range
+from parallel_corpus.shared.ranges import edit_range
 
 
 @pytest.mark.parametrize(

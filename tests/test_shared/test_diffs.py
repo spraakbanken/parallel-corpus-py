@@ -1,4 +1,4 @@
-from graph.shared.diffs import Change, hdiff
+from parallel_corpus.shared.diffs import Change, hdiff
 
 
 def test_hdiff() -> None:

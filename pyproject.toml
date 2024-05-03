@@ -1,9 +1,9 @@
 [project]
-name = "graph"
+name = "parallel-corpus"
 version = "0.1.0"
 description = "TBD"
 authors = [
-    {name = "Kristoffer Andersson", email = "kristoffer.andersson@gu.se"},
+    { name = "Kristoffer Andersson", email = "kristoffer.andersson@gu.se" },
 ]
 dependencies = [
     "diff-match-patch>=20230430",
@@ -12,7 +12,7 @@ dependencies = [
 ]
 requires-python = ">=3.8"
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 
 [build-system]
 requires = ["pdm-backend"]

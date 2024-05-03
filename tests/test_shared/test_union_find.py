@@ -1,4 +1,4 @@
-from graph.shared.union_find import UnionFind, poly_union_find, renumber
+from parallel_corpus.shared.union_find import UnionFind, poly_union_find, renumber
 
 
 def test_union_find() -> None:

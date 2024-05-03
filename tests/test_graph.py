@@ -1,7 +1,7 @@
 from typing import List
 
 import pytest
-from graph import graph, token
+from parallel_corpus import graph, token
 
 
 def test_graph_init() -> None:

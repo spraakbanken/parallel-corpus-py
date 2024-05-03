@@ -58,7 +58,7 @@ help:
 
 PLATFORM := `uname -o`
 REPO := "graph-py"
-PROJECT_SRC := "src/graph"
+PROJECT_SRC := "src/parallel_corpus"
 
 ifeq (${VIRTUAL_ENV},)
   VENV_NAME = .venv

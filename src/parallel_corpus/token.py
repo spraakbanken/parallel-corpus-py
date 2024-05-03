@@ -3,7 +3,7 @@ import re
 from typing import List, TypedDict
 
 
-from graph import shared
+from parallel_corpus import shared
 
 
 @dataclass
@@ -84,6 +84,4 @@ def token_at(tokens: List[str], character_offset: int) -> TokenAt:
             return {"token": i, "offset": character_offset - passed + w}
     if character_offset == len("".join(tokens)):
         return {"token": len(tokens), "offset": 0}
-    raise IndexError(
-        f"Out of bounds: tokens={tokens}, character_offset={character_offset}"
-    )
+    raise IndexError(f"Out of bounds: tokens={tokens}, character_offset={character_offset}")

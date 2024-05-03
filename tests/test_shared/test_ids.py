@@ -1,4 +1,4 @@
-from graph.shared.ids import next_id
+from parallel_corpus.shared.ids import next_id
 
 
 def test_next_id():

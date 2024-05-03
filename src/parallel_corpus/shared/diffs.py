@@ -5,8 +5,8 @@ from typing import Callable, Dict, Generic, List, Optional, Tuple, TypeVar, Unio
 import diff_match_patch as dmp_module
 from typing_extensions import Self
 
-from graph.shared.str_map import str_map
-from graph.source_target import Side
+from parallel_corpus.shared.str_map import str_map
+from parallel_corpus.source_target import Side
 
 dmp = dmp_module.diff_match_patch()
 

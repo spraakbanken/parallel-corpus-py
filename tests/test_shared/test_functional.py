@@ -1,4 +1,4 @@
-from graph.shared import functional
+from parallel_corpus.shared import functional
 
 
 def test_take_last_while_list() -> None:
