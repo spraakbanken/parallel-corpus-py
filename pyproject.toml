@@ -7,7 +7,6 @@ authors = [
 ]
 dependencies = [
     "diff-match-patch>=20230430",
-    "ramda>=0.7.6",
     "more-itertools>=10.2.0",
     "typing-extensions>=4.11.0",
 ]

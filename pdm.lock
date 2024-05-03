@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:381e264110e8b71a36f34c628152129d884623e2088ef9c750ed637e11fbfce5"
+content_hash = "sha256:adaa82ef7accbac4507c9429d6896eb5271db46c371408c1d7cfda2680f917a3"
 
 [[package]]
 name = "colorama"
@@ -309,19 +309,6 @@ files = [
 ]
 
 [[package]]
-name = "ramda"
-version = "0.7.6"
-summary = "Python clone of ramda.js (ramdajs.com)"
-groups = ["default"]
-dependencies = [
-    "toolz",
-]
-files = [
-    {file = "ramda-0.7.6-py3-none-any.whl", hash = "sha256:3c02e76c05818f87616e21493fd82e429eb5c57ab8d83d966a4cc5bd2cdf94be"},
-    {file = "ramda-0.7.6.tar.gz", hash = "sha256:2f935addee8941e44bb12955525a90f05a28dca85ad032957a96f6bc999e6843"},
-]
-
-[[package]]
 name = "ruff"
 version = "0.4.1"
 requires_python = ">=3.7"
@@ -372,17 +359,6 @@ marker = "python_version < \"3.11\""
 files = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
-]
-
-[[package]]
-name = "toolz"
-version = "0.12.1"
-requires_python = ">=3.7"
-summary = "List processing tools and functional utilities"
-groups = ["default"]
-files = [
-    {file = "toolz-0.12.1-py3-none-any.whl", hash = "sha256:d22731364c07d72eea0a0ad45bafb2c2937ab6fd38a3507bf55eae8744aa7d85"},
-    {file = "toolz-0.12.1.tar.gz", hash = "sha256:ecca342664893f177a13dac0e6b41cbd8ac25a358e5f215316d43e2100224f4d"},
 ]
 
 [[package]]
