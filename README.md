@@ -35,7 +35,7 @@ To add `parallel-corpus` manually to `pyproject.toml`:
 
 ```toml
 [project]
-dependencies = ["parallel-corpus>=0.0.1"]
+dependencies = ["parallel-corpus>=0.1.0"]
 ```
 
 ## Usage
