@@ -8,7 +8,7 @@
 [![Stage](https://img.shields.io/pypi/status/parallel-corpus)](https://pypi.org/project/parallel-corpus/)
 
 [![Codecov](https://codecov.io/gh/spraakbanken/parallel-corpus-py/coverage.svg)](https://codecov.io/gh/spraakbanken/parallel-corpus-py)
-[![CI(release)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/release-kb-bert.yml/badge.svg)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/release-kb-bert.yml)
+[![CI(release)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/release.yml/badge.svg)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/release.yml)
 [![CI(check)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/check.yml/badge.svg)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/check.yml)
 [![CI(test)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/test.yml/badge.svg)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/test.yml)
 [![CI(scheduled)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/scheduled.yml/badge.svg)](https://github.com/spraakbanken/parallel-corpus-py/actions/workflows/scheduled.yml)
