@@ -1,0 +1,156 @@
+# name: test_unaligned_modify[0-0-new]
+  list([
+    'newtest ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify[0-1-new]
+  list([
+    'newest ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify[0-15-_]
+  list([
+    '_o ',
+  ])
+# ---
+# name: test_unaligned_modify[0-16-_]
+  list([
+    '_ ',
+  ])
+# ---
+# name: test_unaligned_modify[0-17-_]
+  list([
+    '_ ',
+  ])
+# ---
+# name: test_unaligned_modify[0-5-new ]
+  list([
+    'new ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify[0-5-new]
+  list([
+    'newgraph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify[16-16- !]
+  list([
+    'test ',
+    'graph ',
+    'hello ',
+    '! ',
+  ])
+# ---
+# name: test_unaligned_modify[5-5- ]
+  list([
+    'test ',
+    ' graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify[5-6- ]
+  list([
+    'test ',
+    ' raph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_ids[0-0-this ]
+  't3 t0 t1 t2'
+# ---
+# name: test_unaligned_modify_tokens_ids[0-1-this ]
+  't3 t1 t2'
+# ---
+# name: test_unaligned_modify_tokens_ids[0-1-this]
+  't3 t2'
+# ---
+# name: test_unaligned_modify_tokens_ids_source[0-0-this ]
+  's3 s0 s1 s2'
+# ---
+# name: test_unaligned_modify_tokens_show[0-0-this ]
+  list([
+    'this ',
+    'test ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[0-1-  white ]
+  list([
+    '  white ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[0-1-for this ]
+  list([
+    'for ',
+    'this ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[0-1-this ]
+  list([
+    'this ',
+    'graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[0-1-this]
+  list([
+    'thisgraph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[0-2-  ]
+  list([
+    '  hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[0-2-]
+  list([
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[1-2- graph ]
+  list([
+    'test ',
+    ' graph ',
+    'hello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[1-2-graph]
+  list([
+    'test ',
+    'graphhello ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[1-3-  ]
+  list([
+    'test   ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show[3-3- !]
+  list([
+    'test ',
+    'graph ',
+    'hello  ',
+    '! ',
+  ])
+# ---
+# name: test_unaligned_modify_tokens_show_source[0-0-this ]
+  list([
+    'this ',
+    'test ',
+    'graph ',
+    'hello ',
+  ])
+# ---

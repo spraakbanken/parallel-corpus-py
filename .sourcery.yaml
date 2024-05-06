@@ -1,0 +1,8 @@
+rule_settings:
+  enable:
+    - default
+  rule_types:
+    - refactoring
+    - suggestion
+    - comment
+  python_version: "3.8"

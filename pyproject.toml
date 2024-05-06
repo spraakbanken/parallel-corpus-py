@@ -1,0 +1,33 @@
+[project]
+name = "parallel-corpus"
+version = "0.1.0"
+description = "TBD"
+authors = [
+    { name = "Kristoffer Andersson", email = "kristoffer.andersson@gu.se" },
+]
+dependencies = [
+    "diff-match-patch>=20230430",
+    "more-itertools>=10.2.0",
+    "typing-extensions>=4.11.0",
+    "strenum>=0.4.15",            # For StrEnum i Python < 3.10
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "syrupy>=3.0.6",
+    "pytest>=7.4.4",
+    "ruff>=0.4.1",
+    "mypy>=1.9.0",
+    "pytest-cov>=5.0.0",
+]
