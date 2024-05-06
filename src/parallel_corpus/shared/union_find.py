@@ -27,16 +27,16 @@ class UnionFindOperations(abc.ABC, Generic[A]):
 
 class UnionFind(UnionFindOperations[int]):
     def __init__(self, *, rev: Optional[List[int]] = None) -> None:
-        self._rev: List[Optional[int]] = rev or []
+        self._rev: List[int] = rev or []
 
     def find(self, x: int) -> int:
         while x >= len(self._rev):
-            self._rev.append(None)
+            self._rev.append(None)  # type: ignore [arg-type]
         if self._rev[x] is None:
             self._rev[x] = x
         elif self._rev[x] != x:
-            self._rev[x] = self.find(self._rev[x])
-        return self._rev[x]
+            self._rev[x] = self.find(self._rev[x])  # type: ignore [arg-type]
+        return self._rev[x]  # type: ignore [return-value]
 
     def union(self, x: int, y: int) -> int:
         find_x = self.find(x)
@@ -52,7 +52,7 @@ class UnionFind(UnionFindOperations[int]):
 @dataclass
 class Renumber(Generic[A]):
     bw: Dict[str, int]
-    fw: Dict[str, A]
+    fw: Dict[int, A]
     i = 0
     serialize: Callable[[A], str]
 
@@ -74,7 +74,7 @@ class Renumber(Generic[A]):
 
 def renumber(
     serialize: Callable[[A], str] = json.dumps,
-) -> Tuple[Callable[[int], A], Callable[[A], int]]:
+) -> Tuple[Callable[[int], Optional[A]], Callable[[A], int]]:
     """
     Assign unique numbers to each distinct element
 
@@ -91,7 +91,7 @@ def renumber(
     num('FOO') // => 0
     un(0) // => 'foo'
     """
-    renum = Renumber(bw={}, fw={}, serialize=serialize)
+    renum: Renumber[A] = Renumber(bw={}, fw={}, serialize=serialize)
 
     return renum.un, renum.num
 
@@ -111,7 +111,9 @@ class PolyUnionFind(Generic[A]):
         return self._renum.un(self._uf.union(self._renum.num(x), self._renum.num(y)))
 
     def unions(self, xs: List[A]) -> None:
-        self._uf.unions(map(self._renum.num, xs))
+        num_xs_0 = self._renum.num(xs[0])
+        for x in xs[1:]:
+            self._uf.union(num_xs_0, self._renum.num(x))
 
 
 def poly_union_find(serialize: Callable[[str], str]) -> PolyUnionFind:

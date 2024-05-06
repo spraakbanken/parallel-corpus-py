@@ -21,7 +21,7 @@ class UniqueCheck(Generic[S]):
     """
 
     def __init__(self) -> None:
-        self.c = Count()
+        self.c: Count[S] = Count()
 
     def __call__(self, s: S) -> bool:
         return self.c.inc(s) == 1

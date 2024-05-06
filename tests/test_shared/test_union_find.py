@@ -14,7 +14,7 @@ def test_union_find() -> None:
 
 
 def test_renumber_default() -> None:
-    un, num = renumber()
+    un, num = renumber()  # type: ignore [var-annotated]
     assert num("foo") == 0
     assert num("bar") == 1
     assert num("foo") == 0
@@ -24,7 +24,7 @@ def test_renumber_default() -> None:
 
 
 def test_renumber_lowercase() -> None:
-    un, num = renumber(lambda a: a.lower())
+    un, num = renumber(str.lower)  # type: ignore [var-annotated]
 
     assert num("foo") == 0
     assert num("FOO") == 0

@@ -1,7 +1,6 @@
-from dataclasses import dataclass
 import re
-from typing import List, TypedDict
-
+from dataclasses import dataclass
+from typing import List, Sequence, TypedDict
 
 from parallel_corpus import shared
 
@@ -22,7 +21,7 @@ class Span:
     end: int
 
 
-def text(ts: List[Text]) -> str:
+def text(ts: Sequence[Text]) -> str:
     """The text in some tokens
 
     >>> text(identify(tokenize('apa bepa cepa '), '#'))
@@ -32,13 +31,13 @@ def text(ts: List[Text]) -> str:
     return "".join(texts(ts))
 
 
-def texts(ts: List[Text]) -> List[str]:
+def texts(ts: Sequence[Text]) -> List[str]:
     """The texts in some tokens
 
     >>> texts(identify(tokenize('apa bepa cepa '), '#'))
     ['apa ', 'bepa ', 'cepa ']
     """
-    return list(map(lambda t: t.text, ts))
+    return [t.text for t in ts]
 
 
 def tokenize(s: str) -> List[str]:

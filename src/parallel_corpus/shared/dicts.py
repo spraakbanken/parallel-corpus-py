@@ -1,8 +1,14 @@
-from typing import Callable, Dict, List, TypeVar
+from typing import TYPE_CHECKING, Callable, Dict, List, TypeVar
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsRichComparison
+
+    K = TypeVar("K", bound=SupportsRichComparison)
+else:
+    K = TypeVar("K")
 
 A = TypeVar("A")
 B = TypeVar("B")
-K = TypeVar("K")
 V = TypeVar("V")
 
 

@@ -2,6 +2,7 @@ from typing import List
 
 import pytest
 from parallel_corpus import graph, token
+from parallel_corpus.source_target import Side
 
 
 def test_graph_init() -> None:
@@ -26,10 +27,21 @@ def test_graph_case1() -> None:
     assert "e-s0-t19-t20" in gm.edges
 
 
+def test_graph_case2() -> None:
+    first = "Jonat han saknades , emedan han , med sin vapendragare , redan på annat håll sökt och anträffat fienden ."  # noqa: E501
+    second = "Jonathan saknaes , emedan han , med sin vapendragare , redan på annat håll sökt och anträffat fienden ."  # noqa: E501
+
+    g = graph.init(first)
+
+    gm = graph.set_target(g, second)
+    print(f"{gm=}")
+    assert "e-s0-s1-t20" in gm.edges
+
+
 def test_unaligned_set_side() -> None:
     g0 = graph.init("a bc d")
     print(">>> test_unaligned_set_side")
-    g = graph.unaligned_set_side(g0, "target", "ab c d")
+    g = graph.unaligned_set_side(g0, Side.target, "ab c d")
     print("<<< test_unaligned_set_side")
 
     expected_source = [
@@ -66,7 +78,7 @@ def test_unaligned_set_side() -> None:
 def test_graph_align() -> None:
     g0 = graph.init("a bc d")
 
-    g = graph.unaligned_set_side(g0, "target", "ab c d")
+    g = graph.unaligned_set_side(g0, Side.target, "ab c d")
 
     expected_source = [
         token.Token(id="s0", text="a "),
@@ -209,7 +221,9 @@ def test_unaligned_modify_tokens_ids(from_: int, to: int, text: str, snapshot) -
 )
 def test_unaligned_modify_tokens_show_source(from_: int, to: int, text: str, snapshot) -> None:
     g = graph.init("test graph hello")
-    assert show_source(graph.unaligned_modify_tokens(g, from_, to, text, "source")) == snapshot
+    assert (
+        show_source(graph.unaligned_modify_tokens(g, from_, to, text, Side.source)) == snapshot
+    )
 
 
 @pytest.mark.parametrize(
@@ -220,7 +234,7 @@ def test_unaligned_modify_tokens_show_source(from_: int, to: int, text: str, sna
 )
 def test_unaligned_modify_tokens_ids_source(from_: int, to: int, text: str, snapshot) -> None:
     g = graph.init("test graph hello")
-    assert ids_source(graph.unaligned_modify_tokens(g, from_, to, text, "source")) == snapshot
+    assert ids_source(graph.unaligned_modify_tokens(g, from_, to, text, Side.source)) == snapshot
 
 
 #   show(unaligned_modify_tokens(init('a '), 0, 1, ' ')) // => [' ']
@@ -230,14 +244,14 @@ def test_unaligned_modify_tokens_ids_source(from_: int, to: int, text: str, snap
 #   ids(unaligned_modify_tokens(g, 0, 1, 'this'))      // => 't3 t2'
 #   const showS = (g: Graph) => g.source.map(t => t.text)
 #   const idsS = (g: Graph) => g.source.map(t => t.id).join(' ')
-#   showS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source')) // => ['this ', 'test ', 'graph ', 'hello ']
+#   showS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source')) // => ['this ', 'test ', 'graph ', 'hello ']  # noqa: E501
 #   idsS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source'))  // => 's3 s0 s1 s2'
 
 
 def test_unaligned_rearrange() -> None:
     g = graph.init("apa bepa cepa depa")
     gr = graph.unaligned_rearrange(g, 1, 2, 0)
-    assert graph.target_text(gr) == "bepa cepa apa depa "
+    assert graph.target_text(gr) == "bepa cepa apa depa "  # type: ignore [arg-type]
 
 
 # target_text(unaligned_rearrange(init(), 1, 2, 0)) // =>

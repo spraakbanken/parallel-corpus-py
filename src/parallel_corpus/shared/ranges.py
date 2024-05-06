@@ -37,9 +37,8 @@ def edit_range(s0: str, s: str) -> EditRange:
     {'from': 0, 'to': 0, 'insert': '01'}
     """
     patches = token_diff(s0, s)
-    pre = itertools.takewhile(lambda i: i[0] == 0, patches)
+    pre = list(itertools.takewhile(lambda i: i[0] == 0, patches))
     post = take_last_while(lambda i: i[0] == 0, patches)
-    pre = list(pre)
     from_ = len("".join((i[1] for i in pre)))
     postlen = len("".join((i[1] for i in post)))
     to = len(s0) - postlen

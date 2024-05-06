@@ -1,12 +1,10 @@
 import enum
-import itertools
 from typing import Callable, Dict, Generic, List, Optional, Tuple, TypeVar, Union
 
 import diff_match_patch as dmp_module
 from typing_extensions import Self
 
 from parallel_corpus.shared.str_map import str_map
-from parallel_corpus.source_target import Side
 
 dmp = dmp_module.diff_match_patch()
 
@@ -45,7 +43,7 @@ class Change(Generic[A, B]):
     def inserted(cls, b: B) -> Self:
         return cls(ChangeType.INSERTED, b=b)
 
-    def model_dump(self) -> dict[str, Union[int, A, B]]:
+    def model_dump(self) -> Dict[str, Union[int, A, B]]:
         out: Dict[str, Union[int, A, B]] = {
             "change": int(self.change),
         }
@@ -55,7 +53,9 @@ class Change(Generic[A, B]):
             out["b"] = self.b
         return out
 
-    def __eq__(self, other: Self) -> bool:
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Change):
+            return NotImplemented
         return self.change == other.change and self.a == other.a and self.b == other.b
 
     def __repr__(self) -> str:
@@ -87,7 +87,7 @@ def char_stream():
         i += 1
 
 
-def hdiff(
+def hdiff(  # noqa: C901
     xs: List[A],
     ys: List[B],
     a_cmp: Callable[[A], str] = str,
@@ -115,8 +115,8 @@ def hdiff(
     s2 = "".join((assign(b, b_cmp, b_from) for b in ys))
     d = dmp.diff_main(s1, s2)
 
-    def str_map_change(change: int) -> Callable[[str, Side], Change]:
-        def inner(c: str, _side: Side) -> Change:
+    def str_map_change(change: int) -> Callable[[str, int], Change]:
+        def inner(c: str, _: int) -> Change:
             if change == 0:
                 a = a_from.get(c, []).pop(0)
                 b = b_from.get(c, []).pop(0)
@@ -139,7 +139,6 @@ def hdiff(
         # print(f"{changes=}")
         out.extend(changes)
     return out
-    return list(itertools.chain(*(map_change(change, cs) for change, cs in d)))
 
 
 def token_diff(s1: str, s2: str) -> List[Tuple[int, str]]:

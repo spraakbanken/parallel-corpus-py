@@ -1,8 +1,6 @@
 import re
 from typing import List, TypeVar
 
-from typing_extensions import Self
-
 from . import diffs
 
 __all__ = ["diffs"]
@@ -19,7 +17,7 @@ def end_with_space(s: str) -> str:
 
 def uniq(xs: List[str]) -> List[str]:
     used = set()
-    return [x for x in xs if x not in used and (used.add(x) or True)]
+    return [x for x in xs if x not in used and (used.add(x) or True)]  # type: ignore [func-returns-value]
 
 
 A = TypeVar("A")
