@@ -1,3 +1,5 @@
+"""Parallel corpus as a graph."""
+
 import itertools
 import logging
 import re
