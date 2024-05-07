@@ -192,6 +192,14 @@ def to_char_ids(token: Token) -> List[CharIdPair]:
 
 
 def edge_map(g: Graph) -> Dict[str, Edge]:
+    """Map from token ids to edges
+
+    Args:
+        g (Graph): the Graph to build the edge map from.
+
+    Returns:
+        Dict[str, Edge]: a map from token ids to edges
+    """
     edges = {}
     for e in g.edges.values():
         for i in e.ids:
@@ -274,7 +282,7 @@ def get_side_texts(g: Graph, side: Side) -> List[str]:
 def unaligned_modify_tokens(  # noqa: C901
     g: Graph, from_: int, to: int, text: str, side: Side = Side.target
 ) -> Graph:
-    """# /** Replace the text at some position, merging the spans it touches upon.
+    """Replace the text at some position, merging the spans it touches upon.
 
     #   const show = (g: Graph) => g.target.map(t => t.text)
     #   const ids = (g: Graph) => g.target.map(t => t.id).join(' ')
@@ -301,7 +309,7 @@ def unaligned_modify_tokens(  # noqa: C901
     #   showS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source')) // => ['this ', 'test ', 'graph ', 'hello ']
     #   idsS(unaligned_modify_tokens(g, 0, 0, 'this ', 'source'))  // => 's3 s0 s1 s2'
 
-    # Indexes are token offsets
+    Indexes are token offsets
     """  # noqa: E501
 
     if (
