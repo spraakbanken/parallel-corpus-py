@@ -254,7 +254,7 @@ def unaligned_modify(
     tokens = get_side_texts(g, side)
     token_at = token.token_at(tokens, from_)
     from_token, from_ix = token_at["token"], token_at["offset"]
-    pre = (tokens[from_token] or "")[:from_ix]
+    pre = (tokens[from_token] if from_token < len(tokens) else "")[:from_ix]
     if to == len(get_side_text(g, side)):
         return unaligned_modify_tokens(g, from_token, len(g.get_side(side)), pre + text, side)
     to_token_at = token.token_at(tokens, to)
