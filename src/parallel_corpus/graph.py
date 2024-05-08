@@ -4,7 +4,7 @@ import itertools
 import logging
 import re
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, TypeVar
+from typing import Dict, Iterable, List, Optional, TypedDict, TypeVar
 
 import parallel_corpus.shared.ranges
 import parallel_corpus.shared.str_map
@@ -97,6 +97,32 @@ def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
             ),
         )
     )
+
+
+class TextLabels(TypedDict):
+    text: str
+    labels: List[str]
+
+
+def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
+    """Initialize a graph from unaligned tokens"""
+    edges: Dict[str, Edge] = {}
+
+    def proto_token_to_token(tok: TextLabels, i: int, prefix: str) -> Token:
+        id_ = f"{prefix}{i}"
+        e = edge([id_], tok["labels"], manual=False)
+        edges[id_] = e
+        return Token(tok["text"], id_)
+
+    def proto_tokens_to_tokens(toks: List[TextLabels], side: Side) -> List[Token]:
+        return [
+            proto_token_to_token(tok, i, "s" if side == Side.source else "t")
+            for i, tok in enumerate(toks)
+        ]
+
+    g = map_sides(st, proto_tokens_to_tokens)
+
+    return align(Graph(source=g.source, target=g.target, edges=edges))
 
 
 def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:

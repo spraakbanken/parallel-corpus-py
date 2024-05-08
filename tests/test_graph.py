@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 from parallel_corpus import graph, token
-from parallel_corpus.source_target import Side
+from parallel_corpus.source_target import Side, SourceTarget
 
 
 def test_graph_init() -> None:
@@ -14,6 +14,15 @@ def test_graph_init() -> None:
     assert g.source == source
     assert g.target == target
     assert g.edges == edges
+
+
+def test_from_unaligned() -> None:
+    g = graph.from_unaligned(
+        SourceTarget(
+            source=[{"text": "apa ", "labels": []}], target=[{"text": "apa ", "labels": []}]
+        )
+    )
+    assert g == graph.init("apa")
 
 
 def test_graph_case1() -> None:
