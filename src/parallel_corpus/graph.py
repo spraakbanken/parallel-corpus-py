@@ -87,6 +87,12 @@ def init(s: str, *, manual: bool = False) -> Graph:
     return init_from(token.tokenize(s), manual=manual)
 
 
+def init_with_source_and_target(source: str, target: str, *, manual: bool = False) -> Graph:
+    return init_from_source_and_target(
+        source=token.tokenize(source), target=token.tokenize(target), manual=manual
+    )
+
+
 def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
     return align(
         Graph(
@@ -94,6 +100,25 @@ def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
             target=token.identify(tokens, "t"),
             edges=edge_record(
                 (edge([f"s{i}", f"t{i}"], [], manual=manual) for i, _ in enumerate(tokens))
+            ),
+        )
+    )
+
+
+def init_from_source_and_target(
+    source: List[str], target: List[str], *, manual: bool = False
+) -> Graph:
+    source_tokens = token.identify(source, "s")
+    target_tokens = token.identify(target, "t")
+    return align(
+        Graph(
+            source=source_tokens,
+            target=target_tokens,
+            edges=edge_record(
+                itertools.chain(
+                    (edge([s.id], [], manual=manual) for s in source_tokens),
+                    (edge([t.id], [], manual=manual) for t in target_tokens),
+                )
             ),
         )
     )
@@ -127,6 +152,10 @@ def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
 
 def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:
     return align(unaligned_modify(g, from_, to, text, side))
+
+
+def set_source(g: Graph, text: str) -> Graph:
+    return align(unaligned_set_side(g, Side.source, text))
 
 
 def set_target(g: Graph, text: str) -> Graph:

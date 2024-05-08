@@ -16,6 +16,35 @@ def test_graph_init() -> None:
     assert g.edges == edges
 
 
+def test_init_from_source_and_target_1() -> None:
+    g = graph.init_with_source_and_target(source="apa", target="apa")
+    assert g == graph.init("apa")
+
+
+def test_init_from_source_and_target_2() -> None:
+    g = graph.init_with_source_and_target(source="apa bepa", target="apa")
+    expected_source = token.identify(token.tokenize("apa bepa"), "s")
+    expected_target = token.identify(token.tokenize("apa"), "t")
+    g_expected = graph.Graph(
+        source=expected_source,
+        target=expected_target,
+        edges=graph.edge_record([graph.edge(["s0", "t0"], []), graph.edge(["s1"], [])]),
+    )
+    assert g == g_expected
+
+
+def test_init_from_source_and_target_3() -> None:
+    g = graph.init_with_source_and_target(source="apa", target="bepa apa")
+    expected_source = token.identify(token.tokenize("apa"), "s")
+    expected_target = token.identify(token.tokenize("bepa apa"), "t")
+    g_expected = graph.Graph(
+        source=expected_source,
+        target=expected_target,
+        edges=graph.edge_record([graph.edge(["s0", "t1"], []), graph.edge(["t0"], [])]),
+    )
+    assert g == g_expected
+
+
 def test_from_unaligned() -> None:
     g = graph.from_unaligned(
         SourceTarget(
