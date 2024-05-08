@@ -76,6 +76,17 @@ def test_graph_case2() -> None:
     assert "e-s0-s1-t20" in gm.edges
 
 
+def test_set_source() -> None:
+    source = "Jonat han saknades"
+    target = "Jonathan saknaes"
+
+    g = graph.init(target)
+
+    gm = graph.set_source(g, source)
+    print(f"{gm=}")
+    assert "e-s2-s3-t0" in gm.edges
+
+
 def test_unaligned_set_side() -> None:
     g0 = graph.init("a bc d")
     print(">>> test_unaligned_set_side")
