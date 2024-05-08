@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 from parallel_corpus import graph, token
-from parallel_corpus.source_target import Side
+from parallel_corpus.source_target import Side, SourceTarget
 
 
 def test_graph_init() -> None:
@@ -14,6 +14,44 @@ def test_graph_init() -> None:
     assert g.source == source
     assert g.target == target
     assert g.edges == edges
+
+
+def test_init_from_source_and_target_1() -> None:
+    g = graph.init_with_source_and_target(source="apa", target="apa")
+    assert g == graph.init("apa")
+
+
+def test_init_from_source_and_target_2() -> None:
+    g = graph.init_with_source_and_target(source="apa bepa", target="apa")
+    expected_source = token.identify(token.tokenize("apa bepa"), "s")
+    expected_target = token.identify(token.tokenize("apa"), "t")
+    g_expected = graph.Graph(
+        source=expected_source,
+        target=expected_target,
+        edges=graph.edge_record([graph.edge(["s0", "t0"], []), graph.edge(["s1"], [])]),
+    )
+    assert g == g_expected
+
+
+def test_init_from_source_and_target_3() -> None:
+    g = graph.init_with_source_and_target(source="apa", target="bepa apa")
+    expected_source = token.identify(token.tokenize("apa"), "s")
+    expected_target = token.identify(token.tokenize("bepa apa"), "t")
+    g_expected = graph.Graph(
+        source=expected_source,
+        target=expected_target,
+        edges=graph.edge_record([graph.edge(["s0", "t1"], []), graph.edge(["t0"], [])]),
+    )
+    assert g == g_expected
+
+
+def test_from_unaligned() -> None:
+    g = graph.from_unaligned(
+        SourceTarget(
+            source=[{"text": "apa ", "labels": []}], target=[{"text": "apa ", "labels": []}]
+        )
+    )
+    assert g == graph.init("apa")
 
 
 def test_graph_case1() -> None:
@@ -36,6 +74,17 @@ def test_graph_case2() -> None:
     gm = graph.set_target(g, second)
     print(f"{gm=}")
     assert "e-s0-s1-t20" in gm.edges
+
+
+def test_set_source() -> None:
+    source = "Jonat han saknades"
+    target = "Jonathan saknaes"
+
+    g = graph.init(target)
+
+    gm = graph.set_source(g, source)
+    print(f"{gm=}")
+    assert "e-s2-s3-t0" in gm.edges
 
 
 def test_unaligned_set_side() -> None:
