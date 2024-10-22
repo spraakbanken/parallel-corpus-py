@@ -31,31 +31,6 @@ unfixable = ["B"]
 
 # Ignore `E402` (import violations) in all `__init__.py` files, and in `path/to/file.py`.
 [lint.per-file-ignores]
-"tests/*" = ["D100", "D101", "D102", "D103", "D104", "S101"]
-"bases/sblex/webapp/tests/**/*" = [
-  "D100",
-  "D101",
-  "D102",
-  "D103",
-  "D104",
-  "S101",
-]
-"src/sblex/app.py" = ["A", "E", "F", "I"]
-"src/sblex/compound.py" = ["A", "E", "F", "I", "RUF"]
-"src/sblex/dist.py" = ["A", "E", "F", "I"]
-"src/sblex/fullform*.py" = ["A", "E", "F", "I", "B", "C"]
-"src/sblex/glsib*.py" = ["A", "E", "F", "I"]
-"src/sblex/handler.py" = ["A", "E", "F", "I", "C", "S"]
-"src/sblex/lem.py" = ["A", "E", "F", "I"]
-"src/sblex/lemma.py" = ["A", "E", "F", "I"]
-"src/sblex/lexeme.py" = ["A", "E", "F", "I"]
-"src/sblex/lsib.py" = ["A", "E", "F", "I"]
-"src/sblex/md1.py" = ["A", "E", "F", "I"]
-"src/sblex/paradigms.py" = ["A", "E", "F", "I", "S"]
-"src/sblex/plist.py" = ["A", "E", "F", "I"]
-"src/sblex/pos.py" = ["A", "E", "F", "I"]
-"src/sblex/saldo_util.py" = ["A", "B", "C", "E", "F", "FBT", "I"]
-"src/sblex/sib.py" = ["A", "E", "F", "I"]
-"src/sblex/table.py" = ["A", "E", "F", "I", "S"]
-"tests/e2e/webapp/test_fullform_lex_api.py" = ["E501"]
+"tests/*.py" = ["D100", "D101", "D102", "D103", "D104", "S101"]
+
 # "__init__.py" = ["E402"]
