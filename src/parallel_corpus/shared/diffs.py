@@ -1,5 +1,8 @@
+"""Diffs."""
+
 import enum
-from typing import Callable, Dict, Generic, List, Optional, Tuple, TypeVar, Union
+from itertools import starmap
+from typing import Any, Callable, Dict, Generator, Generic, List, Optional, Tuple, TypeVar, Union
 
 import diff_match_patch as dmp_module
 from typing_extensions import Self
@@ -13,14 +16,14 @@ B = TypeVar("B")
 C = TypeVar("C")
 
 
-class ChangeType(enum.IntEnum):
+class ChangeType(enum.IntEnum):  # noqa: D101
     DELETED = -1
     CONSTANT = 0
     INSERTED = 1
 
 
-class Change(Generic[A, B]):
-    def __init__(self, change: ChangeType, a: Optional[A] = None, b: Optional[B] = None):
+class Change(Generic[A, B]):  # noqa: D101
+    def __init__(self, change: ChangeType, a: Optional[A] = None, b: Optional[B] = None) -> None:  # noqa: D107
         if change == ChangeType.DELETED and a is None:
             raise ValueError("`a` must be given for DELETED")
         if change == ChangeType.CONSTANT and (a is None or b is None):
@@ -32,18 +35,18 @@ class Change(Generic[A, B]):
         self.b = b
 
     @classmethod
-    def constant(cls, a: A, b: B) -> Self:
+    def constant(cls, a: A, b: B) -> Self:  # noqa: D102
         return cls(ChangeType.CONSTANT, a=a, b=b)
 
     @classmethod
-    def deleted(cls, a: A) -> Self:
+    def deleted(cls, a: A) -> Self:  # noqa: D102
         return cls(ChangeType.DELETED, a=a)
 
     @classmethod
-    def inserted(cls, b: B) -> Self:
+    def inserted(cls, b: B) -> Self:  # noqa: D102
         return cls(ChangeType.INSERTED, b=b)
 
-    def model_dump(self) -> Dict[str, Union[int, A, B]]:
+    def model_dump(self) -> Dict[str, Union[int, A, B]]:  # noqa: D102
         out: Dict[str, Union[int, A, B]] = {
             "change": int(self.change),
         }
@@ -53,20 +56,23 @@ class Change(Generic[A, B]):
             out["b"] = self.b
         return out
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:  # noqa: D105
         if not isinstance(other, Change):
             return NotImplemented
         return self.change == other.change and self.a == other.a and self.b == other.b
 
-    def __repr__(self) -> str:
+    def __hash__(self) -> int:  # noqa: D105
+        return hash((self.change, self.a, self.b))
+
+    def __repr__(self) -> str:  # noqa: D105
         return f"Change(change={self.change!r},a={self.a!r},b={self.b!r})"
 
-    def __str__(self) -> str:
+    def __str__(self) -> str:  # noqa: D105
         return f"Change(change={self.change},a={self.a},b={self.b})"
 
 
-def char_stream():
-    """Make a stream of all unicode characters
+def char_stream() -> Generator[str, None, None]:
+    """Make a stream of all unicode characters.
 
     We need this because the diff-match-patch library is hard-coded to work on characters.
 
@@ -87,7 +93,7 @@ def char_stream():
         i += 1
 
 
-def hdiff(  # noqa: C901
+def hdiff(  # noqa: D103
     xs: List[A],
     ys: List[B],
     a_cmp: Callable[[A], str] = str,
@@ -111,8 +117,8 @@ def hdiff(  # noqa: C901
         arr.append(c)
         return u
 
-    s1 = "".join((assign(a, a_cmp, a_from) for a in xs))
-    s2 = "".join((assign(b, b_cmp, b_from) for b in ys))
+    s1 = "".join(assign(a, a_cmp, a_from) for a in xs)
+    s2 = "".join(assign(b, b_cmp, b_from) for b in ys)
     d = dmp.diff_main(s1, s2)
 
     def str_map_change(change: int) -> Callable[[str, int], Change]:
@@ -131,17 +137,17 @@ def hdiff(  # noqa: C901
 
         return inner
 
-    def map_change(change: int, cs):
+    def map_change(change: int, cs):  # noqa: ANN001, ANN202
         return str_map(cs, str_map_change(change))
 
     out = []
-    for changes in (map_change(change, cs) for change, cs in d):
+    for changes in starmap(map_change, d):
         # print(f"{changes=}")
         out.extend(changes)
     return out
 
 
-def token_diff(s1: str, s2: str) -> List[Tuple[int, str]]:
+def token_diff(s1: str, s2: str) -> List[Tuple[int, str]]:  # noqa: D103
     d = dmp.diff_main(s1, s2)
     dmp.diff_cleanupSemantic(d)
     return d

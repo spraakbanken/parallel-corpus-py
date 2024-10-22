@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Edge:
+class Edge:  # noqa: D101
     # a copy of the identifier used in the edges object of the graph
     id: str
     # these are ids to source and target tokens
@@ -42,26 +42,26 @@ Edges = Dict[str, Edge]
 
 
 @dataclass
-class Graph(SourceTarget[List[Token]]):
+class Graph(SourceTarget[List[Token]]):  # noqa: D101
     edges: Edges
     comment: Optional[str] = None
 
-    def copy_with_updated_side_and_edges(
+    def copy_with_updated_side_and_edges(  # noqa: D102
         self, side: Side, new_tokens: List[Token], edges: Edges
     ) -> "Graph":
         source = self.source if side == Side.target else new_tokens
         target = new_tokens if side == Side.target else self.target
         return Graph(source=source, target=target, edges=edges, comment=self.comment)
 
-    def copy_with_edges(self, edges: Edges) -> "Graph":
+    def copy_with_edges(self, edges: Edges) -> "Graph":  # noqa: D102
         return Graph(source=self.source, target=self.target, edges=edges, comment=self.comment)
 
 
-def next_id(g: Graph) -> int:
+def next_id(g: Graph) -> int:  # noqa: D103
     return ids.next_id(itertools.chain((t.id for t in g.target), (s.id for s in g.source)))
 
 
-def edge(
+def edge(  # noqa: D103
     ids: List[str],
     labels: List[str],
     *,
@@ -79,21 +79,21 @@ def edge(
     )
 
 
-def edge_record(es: Iterable[Edge]) -> Dict[str, Edge]:
+def edge_record(es: Iterable[Edge]) -> Dict[str, Edge]:  # noqa: D103
     return {e.id: e for e in es}
 
 
-def init(s: str, *, manual: bool = False) -> Graph:
+def init(s: str, *, manual: bool = False) -> Graph:  # noqa: D103
     return init_from(token.tokenize(s), manual=manual)
 
 
-def init_with_source_and_target(source: str, target: str, *, manual: bool = False) -> Graph:
+def init_with_source_and_target(source: str, target: str, *, manual: bool = False) -> Graph:  # noqa: D103
     return init_from_source_and_target(
         source=token.tokenize(source), target=token.tokenize(target), manual=manual
     )
 
 
-def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
+def init_from(tokens: List[str], *, manual: bool = False) -> Graph:  # noqa: D103
     return align(
         Graph(
             source=token.identify(tokens, "s"),
@@ -105,7 +105,7 @@ def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
     )
 
 
-def init_from_source_and_target(
+def init_from_source_and_target(  # noqa: D103
     source: List[str], target: List[str], *, manual: bool = False
 ) -> Graph:
     source_tokens = token.identify(source, "s")
@@ -124,13 +124,13 @@ def init_from_source_and_target(
     )
 
 
-class TextLabels(TypedDict):
+class TextLabels(TypedDict):  # noqa: D101
     text: str
     labels: List[str]
 
 
 def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
-    """Initialize a graph from unaligned tokens"""
+    """Initialize a graph from unaligned tokens."""
     edges: Dict[str, Edge] = {}
 
     def proto_token_to_token(tok: TextLabels, i: int, prefix: str) -> Token:
@@ -150,19 +150,19 @@ def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
     return align(Graph(source=g.source, target=g.target, edges=edges))
 
 
-def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:
+def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:  # noqa: D103
     return align(unaligned_modify(g, from_, to, text, side))
 
 
-def set_source(g: Graph, text: str) -> Graph:
+def set_source(g: Graph, text: str) -> Graph:  # noqa: D103
     return align(unaligned_set_side(g, Side.source, text))
 
 
-def set_target(g: Graph, text: str) -> Graph:
+def set_target(g: Graph, text: str) -> Graph:  # noqa: D103
     return align(unaligned_set_side(g, Side.target, text))
 
 
-def merge_edges(*es) -> Edge:
+def merge_edges(*es) -> Edge:  # noqa: ANN002, D103
     ids = []
     labels = []
     manual = False
@@ -184,7 +184,7 @@ def merge_edges(*es) -> Edge:
 zero_edge = merge_edges()
 
 
-def align(g: Graph) -> Graph:
+def align(g: Graph) -> Graph:  # noqa: D103
     # Use a union-find to group characters into edges.
     uf = parallel_corpus.shared.union_find.poly_union_find(lambda u: u)
     em = edge_map(g)
@@ -207,7 +207,7 @@ def align(g: Graph) -> Graph:
     proto_edges = {k: e for k, e in g.edges.items() if e.manual}
     first: UniqueCheck[str] = UniqueCheck()
 
-    def update_edges(tokens, _side):
+    def update_edges(tokens, _side) -> None:  # noqa: ANN001
         for tok in tokens:
             e_repr = em[tok.id]
             if not e_repr.manual:
@@ -225,21 +225,21 @@ def align(g: Graph) -> Graph:
     return g.copy_with_edges(edges)
 
 
-def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
+def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:  # noqa: D103
     return align(unaligned_rearrange(g, begin, end, dest))
 
 
-def target_text(g: SourceTarget[List[token.Text]]) -> str:
+def target_text(g: SourceTarget[List[token.Text]]) -> str:  # noqa: D103
     return token.text(g.target)
 
 
 @dataclass
-class CharIdPair:
+class CharIdPair:  # noqa: D101
     char: str
     id: Optional[str] = None
 
 
-def to_char_ids(token: Token) -> List[CharIdPair]:
+def to_char_ids(token: Token) -> List[CharIdPair]:  # noqa: D103
     return parallel_corpus.shared.str_map.str_map(
         token.text,
         lambda char, _i: CharIdPair(char=char, id=None if char == " " else token.id),
@@ -247,7 +247,7 @@ def to_char_ids(token: Token) -> List[CharIdPair]:
 
 
 def edge_map(g: Graph) -> Dict[str, Edge]:
-    """Map from token ids to edges
+    """Map from token ids to edges.
 
     Args:
         g (Graph): the Graph to build the edge map from.
@@ -262,7 +262,7 @@ def edge_map(g: Graph) -> Dict[str, Edge]:
     return edges
 
 
-def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:
+def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:  # noqa: D103
     text0 = get_side_text(g, side)
     edits = parallel_corpus.shared.ranges.edit_range(text0, text)
 
@@ -313,7 +313,6 @@ def unaligned_modify(
 
     Indexes are character offsets (use CodeMirror's doc.posFromIndex and doc.indexFromPos to convert)
     """  # noqa: E501
-
     tokens = get_side_texts(g, side)
     token_at = token.token_at(tokens, from_)
     from_token, from_ix = token_at["token"], token_at["offset"]
@@ -326,15 +325,15 @@ def unaligned_modify(
     return unaligned_modify_tokens(g, from_token, to_token + 1, pre + text + post, side)
 
 
-def get_side_text(g: Graph, side: Side) -> str:
+def get_side_text(g: Graph, side: Side) -> str:  # noqa: D103
     return token.text(g.get_side(side))
 
 
-def get_side_texts(g: Graph, side: Side) -> List[str]:
+def get_side_texts(g: Graph, side: Side) -> List[str]:  # noqa: D103
     return token.texts(g.get_side(side))
 
 
-def unaligned_modify_tokens(  # noqa: C901
+def unaligned_modify_tokens(
     g: Graph, from_: int, to: int, text: str, side: Side = Side.target
 ) -> Graph:
     """Replace the text at some position, merging the spans it touches upon.
@@ -366,7 +365,6 @@ def unaligned_modify_tokens(  # noqa: C901
 
     Indexes are token offsets
     """  # noqa: E501
-
     if (
         from_ < 0
         or to < 0
@@ -382,13 +380,12 @@ def unaligned_modify_tokens(  # noqa: C901
             return unaligned_modify_tokens(
                 g, from_ - 1, to, g.get_side(side)[from_ - 1].text + text, side
             )
-        elif to < len(g.get_side(side)):
+        if to < len(g.get_side(side)):
             return unaligned_modify_tokens(
                 g, from_, to + 1, text + g.get_side(side)[to].text, side
             )
 
-        else:
-            logger.warn("Introducing whitespace into empty graph")
+        logger.warning("Introducing whitespace into empty graph")
 
     if NO_WHITESPACE_AT_END.match(text[-1:]) is not None and to < len(g.get_side(side)):
         #     if replacement text does not end with whitespace, grab the next word as well
@@ -421,8 +418,7 @@ def unaligned_modify_tokens(  # noqa: C901
             for id_ in e.ids:
                 if id_ not in ids_removed:
                     new_edge_ids.add(id_)
-            for lbl in e.labels:
-                new_edge_labels.add(lbl)
+            new_edge_labels.update(e.labels)
             return False
         return True
 
@@ -436,11 +432,12 @@ def unaligned_modify_tokens(  # noqa: C901
 
 
 def unaligned_rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
-    """Moves a slice of the target tokens and puts it at a new destination.
+    """Move a slice of the target tokens and puts it at a new destination.
 
       target_text(unaligned_rearrange(init('apa bepa cepa depa'), 1, 2, 0)) // => 'bepa cepa apa depa '
 
-    Indexes are token offsets"""  # noqa: E501
+    Indexes are token offsets
+    """  # noqa: E501
     em = edge_map(g)
     edge_ids_to_update = {em[t.id].id for t in g.target[begin : (end + 1)]}
     new_edges = {}

@@ -1,6 +1,7 @@
 from typing import List
 
 import pytest
+
 from parallel_corpus import graph, token
 from parallel_corpus.source_target import Side, SourceTarget
 
@@ -180,15 +181,15 @@ def show_source(g: graph.Graph) -> List[str]:
 
 
 def ids(g: graph.Graph) -> str:
-    return " ".join((t.id for t in g.target))
+    return " ".join(t.id for t in g.target)
 
 
 def ids_source(g: graph.Graph) -> str:
-    return " ".join((s.id for s in g.source))
+    return " ".join(s.id for s in g.source)
 
 
 @pytest.mark.parametrize(
-    "i0, i1, word",
+    ("i0", "i1", "word"),
     [
         (0, 0, "new"),
         (0, 1, "new"),
@@ -202,7 +203,7 @@ def ids_source(g: graph.Graph) -> str:
         (16, 16, " !"),
     ],
 )
-def test_unaligned_modify(i0: int, i1: int, word: str, snapshot):
+def test_unaligned_modify(i0: int, i1: int, word: str, snapshot) -> None:
     g = graph.init("test graph hello")
     assert g is not None
     assert show(graph.unaligned_modify(g, i0, i1, word)) == snapshot
@@ -223,13 +224,13 @@ def test_unaligned_modify_tokens() -> None:
     assert ids(g) == "t0 t1 t2"
 
 
-@pytest.mark.parametrize("text, expected", [("this", True), ("this ", False)])
+@pytest.mark.parametrize(("text", "expected"), [("this", True), ("this ", False)])
 def test_no_whitespace_at_end(text: str, *, expected: bool) -> None:
     assert (graph.NO_WHITESPACE_AT_END.match(text[-1:]) is not None) is expected
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
         (0, 1, "this "),
@@ -250,7 +251,7 @@ def test_unaligned_modify_tokens_show(from_: int, to: int, text: str, snapshot) 
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
         (0, 1, "this "),
@@ -263,7 +264,7 @@ def test_unaligned_modify_tokens_ids(from_: int, to: int, text: str, snapshot) -
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
     ],
@@ -276,7 +277,7 @@ def test_unaligned_modify_tokens_show_source(from_: int, to: int, text: str, sna
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
     ],

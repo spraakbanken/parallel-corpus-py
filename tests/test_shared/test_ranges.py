@@ -1,20 +1,23 @@
+import string
+
 import pytest
+
 from parallel_corpus.shared.ranges import edit_range
 
 
 @pytest.mark.parametrize(
-    "s0, s",
+    ("s0", "s"),
     [
-        ("0123456789", "0189"),
-        ("0123456789", "01"),
-        ("0123456789", "89"),
-        ("0123456789", ""),
-        ("0123456789", "01xyz89"),
-        ("0123456789", "01xyz"),
-        ("0123456789", "xyz89"),
-        ("0123456789", "xyz"),
+        (string.digits, "0189"),
+        (string.digits, "01"),
+        (string.digits, "89"),
+        (string.digits, ""),
+        (string.digits, "01xyz89"),
+        (string.digits, "01xyz"),
+        (string.digits, "xyz89"),
+        (string.digits, "xyz"),
         ("", "01"),
     ],
 )
-def test_edit_range(s0: str, s: str, snapshot):
+def test_edit_range(s0: str, s: str, snapshot) -> None:
     assert edit_range(s0, s) == snapshot
