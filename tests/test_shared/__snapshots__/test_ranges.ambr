@@ -1,3 +1,4 @@
+# serializer version: 1
 # name: test_edit_range[-01]
   dict({
     'from': 0,

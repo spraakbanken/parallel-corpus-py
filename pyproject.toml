@@ -38,6 +38,11 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.3",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

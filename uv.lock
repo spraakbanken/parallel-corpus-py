@@ -262,6 +262,11 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "bump-my-version" },
@@ -276,6 +281,7 @@ dev = [
 requires-dist = [
     { name = "diff-match-patch", specifier = ">=20230430" },
     { name = "more-itertools", specifier = ">=10.2.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.3" },
     { name = "strenum", specifier = ">=0.4.15" },
     { name = "typing-extensions", specifier = ">=4.11.0" },
 ]
