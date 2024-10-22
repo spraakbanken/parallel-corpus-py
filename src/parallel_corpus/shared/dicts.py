@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable, Dict, List, TypeVar
 if TYPE_CHECKING:
     from _typeshed import SupportsRichComparison
 
-    K = TypeVar("K", bound=SupportsRichComparison)
+    K = TypeVar("K", bound=SupportsRichComparison)  # type: ignore [syntax]
 else:
     K = TypeVar("K")
 

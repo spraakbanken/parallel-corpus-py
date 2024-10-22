@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from parallel_corpus.token import Token, identify, tokenize
+from parallel_corpus.text_token import Token, identify, tokenize
 
 
 def test_can_create_token() -> None:
