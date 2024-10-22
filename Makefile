@@ -57,8 +57,8 @@ help:
 	@echo ""
 
 PLATFORM := `uname -o`
-REPO := "<REPO-NAME-HERE>"
-PROJECT_SRC := "<SRC-FOLDER-HERE>"
+REPO := parallel-corpus-py
+PROJECT_SRC := src
 
 ifeq (${VIRTUAL_ENV},)
   VENV_NAME = .venv
