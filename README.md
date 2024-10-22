@@ -60,13 +60,20 @@ print(f"{gm.edges=}")
 
 This project keeps a [changelog](./CHANGELOG.md).
 
+## Supported Python Versions
+
+This library thrives to support the following versions:
+
+- v0.2: Python 3.9
+- v0.1: Python 3.8
+
 ## Development
 
 This project uses [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 Tools used:
 
-- [pdm](https://pdm-project.org) for project management.
+- [uv](https://docs.astral.sh/uv/) for project management.
 - [pre-commit](https://pre-commit.com/) for pre-commit checking
   - runs ruff linter
   - runs ruff formatter

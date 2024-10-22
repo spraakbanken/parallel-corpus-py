@@ -15,6 +15,8 @@ from parallel_corpus.shared.unique_check import UniqueCheck
 from parallel_corpus.source_target import Side, SourceTarget, map_sides
 from parallel_corpus.text_token import Token
 
+__all__ = ["Graph", "Side"]
+
 A = TypeVar("A")
 B = TypeVar("B")
 
@@ -26,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Edge:  # noqa: D101
+class Edge:
     # a copy of the identifier used in the edges object of the graph
     id: str
     # these are ids to source and target tokens
@@ -57,11 +59,11 @@ class Graph(SourceTarget[List[Token]]):  # noqa: D101
         return Graph(source=self.source, target=self.target, edges=edges, comment=self.comment)
 
 
-def next_id(g: Graph) -> int:  # noqa: D103
+def next_id(g: Graph) -> int:
     return ids.next_id(itertools.chain((t.id for t in g.target), (s.id for s in g.source)))
 
 
-def edge(  # noqa: D103
+def edge(
     ids: List[str],
     labels: List[str],
     *,
@@ -79,21 +81,21 @@ def edge(  # noqa: D103
     )
 
 
-def edge_record(es: Iterable[Edge]) -> Dict[str, Edge]:  # noqa: D103
+def edge_record(es: Iterable[Edge]) -> Dict[str, Edge]:
     return {e.id: e for e in es}
 
 
-def init(s: str, *, manual: bool = False) -> Graph:  # noqa: D103
+def init(s: str, *, manual: bool = False) -> Graph:
     return init_from(text_token.tokenize(s), manual=manual)
 
 
-def init_with_source_and_target(source: str, target: str, *, manual: bool = False) -> Graph:  # noqa: D103
+def init_with_source_and_target(source: str, target: str, *, manual: bool = False) -> Graph:
     return init_from_source_and_target(
         source=text_token.tokenize(source), target=text_token.tokenize(target), manual=manual
     )
 
 
-def init_from(tokens: List[str], *, manual: bool = False) -> Graph:  # noqa: D103
+def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
     return align(
         Graph(
             source=text_token.identify(tokens, "s"),
@@ -105,7 +107,7 @@ def init_from(tokens: List[str], *, manual: bool = False) -> Graph:  # noqa: D10
     )
 
 
-def init_from_source_and_target(  # noqa: D103
+def init_from_source_and_target(
     source: List[str], target: List[str], *, manual: bool = False
 ) -> Graph:
     source_tokens = text_token.identify(source, "s")
@@ -124,7 +126,7 @@ def init_from_source_and_target(  # noqa: D103
     )
 
 
-class TextLabels(TypedDict):  # noqa: D101
+class TextLabels(TypedDict):
     text: str
     labels: List[str]
 
@@ -150,19 +152,19 @@ def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
     return align(Graph(source=g.source, target=g.target, edges=edges))
 
 
-def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:  # noqa: D103
+def modify(g: Graph, from_: int, to: int, text: str, side: Side = Side.target) -> Graph:
     return align(unaligned_modify(g, from_, to, text, side))
 
 
-def set_source(g: Graph, text: str) -> Graph:  # noqa: D103
+def set_source(g: Graph, text: str) -> Graph:
     return align(unaligned_set_side(g, Side.source, text))
 
 
-def set_target(g: Graph, text: str) -> Graph:  # noqa: D103
+def set_target(g: Graph, text: str) -> Graph:
     return align(unaligned_set_side(g, Side.target, text))
 
 
-def merge_edges(*es) -> Edge:  # noqa: ANN002, D103
+def merge_edges(*es) -> Edge:  # noqa: ANN002
     ids = []
     labels = []
     manual = False
@@ -184,7 +186,7 @@ def merge_edges(*es) -> Edge:  # noqa: ANN002, D103
 zero_edge = merge_edges()
 
 
-def align(g: Graph) -> Graph:  # noqa: D103
+def align(g: Graph) -> Graph:
     # Use a union-find to group characters into edges.
     uf = parallel_corpus.shared.union_find.poly_union_find(lambda u: u)
     em = edge_map(g)
@@ -225,21 +227,21 @@ def align(g: Graph) -> Graph:  # noqa: D103
     return g.copy_with_edges(edges)
 
 
-def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:  # noqa: D103
+def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
     return align(unaligned_rearrange(g, begin, end, dest))
 
 
-def target_text(g: SourceTarget[List[text_token.Text]]) -> str:  # noqa: D103
+def target_text(g: SourceTarget[List[text_token.Text]]) -> str:
     return text_token.text(g.target)
 
 
 @dataclass
-class CharIdPair:  # noqa: D101
+class CharIdPair:
     char: str
     id: Optional[str] = None
 
 
-def to_char_ids(token: Token) -> List[CharIdPair]:  # noqa: D103
+def to_char_ids(token: Token) -> List[CharIdPair]:
     return parallel_corpus.shared.str_map.str_map(
         token.text,
         lambda char, _i: CharIdPair(char=char, id=None if char == " " else token.id),
@@ -262,7 +264,7 @@ def edge_map(g: Graph) -> Dict[str, Edge]:
     return edges
 
 
-def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:  # noqa: D103
+def unaligned_set_side(g: Graph, side: Side, text: str) -> Graph:
     text0 = get_side_text(g, side)
     edits = parallel_corpus.shared.ranges.edit_range(text0, text)
 
@@ -325,11 +327,11 @@ def unaligned_modify(
     return unaligned_modify_tokens(g, from_token, to_token + 1, pre + text + post, side)
 
 
-def get_side_text(g: Graph, side: Side) -> str:  # noqa: D103
+def get_side_text(g: Graph, side: Side) -> str:
     return text_token.text(g.get_side(side))
 
 
-def get_side_texts(g: Graph, side: Side) -> List[str]:  # noqa: D103
+def get_side_texts(g: Graph, side: Side) -> List[str]:
     return text_token.texts(g.get_side(side))
 
 
