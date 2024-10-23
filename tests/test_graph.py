@@ -1,14 +1,15 @@
 from typing import List
 
 import pytest
-from parallel_corpus import graph, token
+
+from parallel_corpus import graph, text_token
 from parallel_corpus.source_target import Side, SourceTarget
 
 
 def test_graph_init() -> None:
     g = graph.init("w1 w2")
-    source = [token.Token(text="w1 ", id="s0"), token.Token(text="w2 ", id="s1")]
-    target = [token.Token(text="w1 ", id="t0"), token.Token(text="w2 ", id="t1")]
+    source = [text_token.Token(text="w1 ", id="s0"), text_token.Token(text="w2 ", id="s1")]
+    target = [text_token.Token(text="w1 ", id="t0"), text_token.Token(text="w2 ", id="t1")]
     edges = graph.edge_record([graph.edge(["s0", "t0"], []), graph.edge(["s1", "t1"], [])])
 
     assert g.source == source
@@ -23,8 +24,8 @@ def test_init_from_source_and_target_1() -> None:
 
 def test_init_from_source_and_target_2() -> None:
     g = graph.init_with_source_and_target(source="apa bepa", target="apa")
-    expected_source = token.identify(token.tokenize("apa bepa"), "s")
-    expected_target = token.identify(token.tokenize("apa"), "t")
+    expected_source = text_token.identify(text_token.tokenize("apa bepa"), "s")
+    expected_target = text_token.identify(text_token.tokenize("apa"), "t")
     g_expected = graph.Graph(
         source=expected_source,
         target=expected_target,
@@ -35,8 +36,8 @@ def test_init_from_source_and_target_2() -> None:
 
 def test_init_from_source_and_target_3() -> None:
     g = graph.init_with_source_and_target(source="apa", target="bepa apa")
-    expected_source = token.identify(token.tokenize("apa"), "s")
-    expected_target = token.identify(token.tokenize("bepa apa"), "t")
+    expected_source = text_token.identify(text_token.tokenize("apa"), "s")
+    expected_target = text_token.identify(text_token.tokenize("bepa apa"), "t")
     g_expected = graph.Graph(
         source=expected_source,
         target=expected_target,
@@ -94,19 +95,19 @@ def test_unaligned_set_side() -> None:
     print("<<< test_unaligned_set_side")
 
     expected_source = [
-        token.Token(id="s0", text="a "),
-        token.Token(id="s1", text="bc "),
-        token.Token(id="s2", text="d "),
+        text_token.Token(id="s0", text="a "),
+        text_token.Token(id="s1", text="bc "),
+        text_token.Token(id="s2", text="d "),
     ]
     expected_g0_target = [
-        token.Token(id="t0", text="a "),
-        token.Token(id="t1", text="bc "),
-        token.Token(id="t2", text="d "),
+        text_token.Token(id="t0", text="a "),
+        text_token.Token(id="t1", text="bc "),
+        text_token.Token(id="t2", text="d "),
     ]
     expected_g_target = [
-        token.Token(id="t3", text="ab "),
-        token.Token(id="t4", text="c "),
-        token.Token(id="t5", text="d "),
+        text_token.Token(id="t3", text="ab "),
+        text_token.Token(id="t4", text="c "),
+        text_token.Token(id="t5", text="d "),
     ]
     expected_g_edges = {
         "e-s0-s1-s2-t3-t4-t5": graph.Edge(
@@ -130,19 +131,19 @@ def test_graph_align() -> None:
     g = graph.unaligned_set_side(g0, Side.target, "ab c d")
 
     expected_source = [
-        token.Token(id="s0", text="a "),
-        token.Token(id="s1", text="bc "),
-        token.Token(id="s2", text="d "),
+        text_token.Token(id="s0", text="a "),
+        text_token.Token(id="s1", text="bc "),
+        text_token.Token(id="s2", text="d "),
     ]
     expected_g0_target = [
-        token.Token(id="t0", text="a "),
-        token.Token(id="t1", text="bc "),
-        token.Token(id="t2", text="d "),
+        text_token.Token(id="t0", text="a "),
+        text_token.Token(id="t1", text="bc "),
+        text_token.Token(id="t2", text="d "),
     ]
     expected_g_target = [
-        token.Token(id="t3", text="ab "),
-        token.Token(id="t4", text="c "),
-        token.Token(id="t5", text="d "),
+        text_token.Token(id="t3", text="ab "),
+        text_token.Token(id="t4", text="c "),
+        text_token.Token(id="t5", text="d "),
     ]
     expected_g_edges = {
         "e-s0-s1-s2-t3-t4-t5": graph.Edge(
@@ -180,15 +181,15 @@ def show_source(g: graph.Graph) -> List[str]:
 
 
 def ids(g: graph.Graph) -> str:
-    return " ".join((t.id for t in g.target))
+    return " ".join(t.id for t in g.target)
 
 
 def ids_source(g: graph.Graph) -> str:
-    return " ".join((s.id for s in g.source))
+    return " ".join(s.id for s in g.source)
 
 
 @pytest.mark.parametrize(
-    "i0, i1, word",
+    ("i0", "i1", "word"),
     [
         (0, 0, "new"),
         (0, 1, "new"),
@@ -202,7 +203,7 @@ def ids_source(g: graph.Graph) -> str:
         (16, 16, " !"),
     ],
 )
-def test_unaligned_modify(i0: int, i1: int, word: str, snapshot):
+def test_unaligned_modify(i0: int, i1: int, word: str, snapshot) -> None:
     g = graph.init("test graph hello")
     assert g is not None
     assert show(graph.unaligned_modify(g, i0, i1, word)) == snapshot
@@ -223,13 +224,13 @@ def test_unaligned_modify_tokens() -> None:
     assert ids(g) == "t0 t1 t2"
 
 
-@pytest.mark.parametrize("text, expected", [("this", True), ("this ", False)])
+@pytest.mark.parametrize(("text", "expected"), [("this", True), ("this ", False)])
 def test_no_whitespace_at_end(text: str, *, expected: bool) -> None:
     assert (graph.NO_WHITESPACE_AT_END.match(text[-1:]) is not None) is expected
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
         (0, 1, "this "),
@@ -250,7 +251,7 @@ def test_unaligned_modify_tokens_show(from_: int, to: int, text: str, snapshot) 
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
         (0, 1, "this "),
@@ -263,7 +264,7 @@ def test_unaligned_modify_tokens_ids(from_: int, to: int, text: str, snapshot) -
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
     ],
@@ -276,7 +277,7 @@ def test_unaligned_modify_tokens_show_source(from_: int, to: int, text: str, sna
 
 
 @pytest.mark.parametrize(
-    "from_, to, text",
+    ("from_", "to", "text"),
     [
         (0, 0, "this "),
     ],

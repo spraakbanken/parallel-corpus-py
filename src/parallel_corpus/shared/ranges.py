@@ -1,3 +1,5 @@
+"""Ranges."""
+
 import itertools
 from typing import TypedDict
 
@@ -8,7 +10,8 @@ EditRange = TypedDict("EditRange", {"from": int, "to": int, "insert": str})
 
 
 def edit_range(s0: str, s: str) -> EditRange:
-    """
+    """Create an EditRange.
+
     >>> edit_range('0123456789', '0189')
     {'from': 2, 'to': 8, 'insert': ''}
 
@@ -39,8 +42,8 @@ def edit_range(s0: str, s: str) -> EditRange:
     patches = token_diff(s0, s)
     pre = list(itertools.takewhile(lambda i: i[0] == 0, patches))
     post = take_last_while(lambda i: i[0] == 0, patches)
-    from_ = len("".join((i[1] for i in pre)))
-    postlen = len("".join((i[1] for i in post)))
+    from_ = len("".join(i[1] for i in pre))
+    postlen = len("".join(i[1] for i in post))
     to = len(s0) - postlen
     insert = s[from_ : (len(s) - (len(s0) - to))]
     return {"from": from_, "to": to, "insert": insert}

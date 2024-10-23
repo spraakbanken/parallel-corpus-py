@@ -9,7 +9,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron:  '7 7 * * *'
+    - cron: "7 7 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -17,8 +17,11 @@ concurrency:
 
 name: rolling
 
-jobs:
+env:
+  UV_VERSION: "0.4.18"
+  UV_CACHE_DIR: /tmp/.uv-cache
 
+jobs:
   # https://twitter.com/alcuadrado/status/1571291687837732873
   update:
     # This action checks that updating the dependencies of this crate to the latest available that
@@ -35,17 +38,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
+      - name: Set up uv
+        if: hashFiles('uv.lock') != ''
+        run: curl -LsSf https://astral.sh/uv/${{ env.UV_VERSION }}/install.sh | sh
       - name: Install 3.12
-        if: hashFiles('pdm.lock') != ''
-        uses: pdm-project/setup-pdm@v4
+        if: hashFiles('uv.lock') != ''
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: pdm update
-        if: hashFiles('pdm.lock') != ''
-        run: pdm update
-      - name: pdm sync --dev
-        if: hashFiles('pdm.lock') != ''
-        run: pdm sync --dev
+
+      - name: Restore uv cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.uv-cache
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            uv-${{ runner.os }}
+
+      - name: uv sync --dev --upgrade
+        if: hashFiles('uv.lock') != ''
+        run: uv sync --dev --upgrade
       - name: make test
-        if: hashFiles('pdm.lock') != ''
+        if: hashFiles('uv.lock') != ''
         run: make test
+
+      - name: Minimize uv cache
+        if: hashFiles('uv.lock') != ''
+        run: uv cache prune --ci

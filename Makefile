@@ -1,6 +1,6 @@
 
 # use this Makefile as base in your project by running
-# git remote add make https://github.com/spraakbanken/python-pdm-make-conf
+# git remote add make https://github.com/spraakbanken/python-uv-make-conf
 # git fetch make
 # git merge --allow-unrelated-histories make/main
 #
@@ -57,12 +57,12 @@ help:
 	@echo ""
 
 PLATFORM := `uname -o`
-REPO := "graph-py"
-PROJECT_SRC := "src/parallel_corpus"
+REPO := parallel-corpus-py
+PROJECT_SRC := src
 
 ifeq (${VIRTUAL_ENV},)
   VENV_NAME = .venv
-  INVENV = pdm run
+  INVENV = uv run
 else
   VENV_NAME = ${VIRTUAL_ENV}
   INVENV =
@@ -83,16 +83,16 @@ dev: install-dev
 
 # setup development environment
 install-dev:
-	pdm install --dev
+	uv sync --dev
 
 # setup production environment
 install:
-	pdm sync --prod
+	uv sync --no-dev
 
-lock: pdm.lock
+lock: uv.lock
 
-pdm.lock: pyproject.toml
-	pdm lock
+uv.lock: pyproject.toml
+	uv lock
 
 .PHONY: test
 test:
@@ -139,7 +139,7 @@ check-fmt:
 	${INVENV} ruff format --check ${PROJECT_SRC} ${tests}
 
 build:
-	pdm build
+	uvx --from build pyproject-build --installer uv
 
 branch := "main"
 publish:
@@ -150,8 +150,8 @@ publish:
 prepare-release: update-changelog tests/requirements-testing.lock
 
 # we use lock extension so that dependabot doesn't pick up changes in this file
-tests/requirements-testing.lock: pyproject.toml pdm.lock
-	pdm export --dev --format requirements --output $@
+tests/requirements-testing.lock: pyproject.toml tests/requirements-testing.in
+	uv pip compile $^ --output-file $@
 
 .PHONY: update-changelog
 update-changelog: CHANGELOG.md
@@ -164,3 +164,5 @@ CHANGELOG.md:
 .PHONY: snapshot-update
 snapshot-update:
 	${INVENV} pytest --snapshot-update
+
+### === project targets below this line ===

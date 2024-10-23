@@ -12,7 +12,7 @@ dependencies = [
     "typing-extensions>=4.11.0",
     "strenum>=0.4.15",            # For StrEnum i Python < 3.10
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 readme = "README.md"
 license = { text = "MIT" }
 classifiers = [
@@ -25,11 +25,11 @@ classifiers = [
     "Operating System :: POSIX",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: MacOS :: MacOS X",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     # "uncomment if you test on these interpreters:",
     # "Programming Language :: Python :: Implementation :: IronPython",
@@ -38,20 +38,21 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-
-[tool.pdm]
-distribution = true
-
-[tool.pdm.dev-dependencies]
+[project.optional-dependencies]
 dev = [
-    "syrupy>=3.0.6",
-    "pytest>=7.4.4",
-    "ruff>=0.4.1",
-    "mypy>=1.9.0",
+    "pytest>=8.3.3",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "bump-my-version>=0.28.0",
+    "mypy>=1.12.1",
     "pytest-cov>=5.0.0",
-    "bump-my-version>=0.21.0",
+    "pytest>=8.3.3",
+    "ruff>=0.7.0",
+    "syrupy>=4.7.2",
 ]
