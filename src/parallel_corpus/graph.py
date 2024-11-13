@@ -1,5 +1,6 @@
 """Parallel corpus as a graph."""
 
+import copy
 import itertools
 import logging
 import re
@@ -233,6 +234,27 @@ def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
 
 def target_text(g: SourceTarget[List[text_token.Text]]) -> str:
     return text_token.text(g.target)
+
+
+def connect_isolated_tokens_based_on_index(g: Graph) -> Graph:
+    g_new = copy.deepcopy(g)
+    isolated_source_edges = [
+        e for e in g_new.edges.values() if len(e.ids) == 1 and e.ids[0].startswith("s")
+    ]
+    isolated_target_edges = [
+        e for e in g_new.edges.values() if len(e.ids) == 1 and e.ids[0].startswith("t")
+    ]
+    for s_edge in isolated_source_edges:
+        needle = s_edge.ids[0].replace("s", "t")
+        t_edge = next(filter(lambda t: t.ids[0] == needle, isolated_target_edges), None)
+        if t_edge:
+            del g_new.edges[s_edge.id]
+            del g_new.edges[t_edge.id]
+
+            new_edge = merge_edges(s_edge, t_edge)
+            g_new.edges[new_edge.id] = new_edge
+
+    return g_new
 
 
 @dataclass
