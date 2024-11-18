@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from parallel_corpus import graph, text_token
@@ -172,11 +170,11 @@ def test_graph_align() -> None:
     assert len(g_aligned.edges) == 2
 
 
-def show(g: graph.Graph) -> List[str]:
+def show(g: graph.Graph) -> list[str]:
     return [t.text for t in g.target]
 
 
-def show_source(g: graph.Graph) -> List[str]:
+def show_source(g: graph.Graph) -> list[str]:
     return [s.text for s in g.source]
 
 
@@ -305,3 +303,13 @@ def test_unaligned_rearrange() -> None:
 
 
 # target_text(unaligned_rearrange(init(), 1, 2, 0)) // =>
+
+
+def test_connecting_token_based_on_index() -> None:
+    original_text = "Den 24 maj: JfS 404: pä ansökan af handlanden E. G. Petersson i Mönstcräs. Den 25,maj: M 383: pá ansökan as"  # noqa: E501
+    generated_text = "Den 24 maj: № 404: på ansökan af handlanden E. G. Petersson i Mönsterås. Den 25 maj: № 383: på ansökan af"  # noqa: E501
+
+    g = graph.init_with_source_and_target(original_text, generated_text)
+    print(f"{g=}")
+    g_new = graph.connect_isolated_tokens_based_on_index(g)
+    assert "e-s3-t3" in g_new.edges

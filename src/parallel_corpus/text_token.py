@@ -1,8 +1,9 @@
 """Token."""
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import List, Sequence, TypedDict
+from typing import TypedDict
 
 from parallel_corpus import shared
 
@@ -33,7 +34,7 @@ def text(ts: Sequence[Text]) -> str:
     return "".join(texts(ts))
 
 
-def texts(ts: Sequence[Text]) -> List[str]:
+def texts(ts: Sequence[Text]) -> list[str]:
     """Return text from the given tokens as list.
 
     >>> texts(identify(tokenize('apa bepa cepa '), '#'))
@@ -42,7 +43,7 @@ def texts(ts: Sequence[Text]) -> List[str]:
     return [t.text for t in ts]
 
 
-def tokenize(s: str) -> List[str]:
+def tokenize(s: str) -> list[str]:
     """Tokenizes text on whitespace, prefers to have trailing whitespace."""
     return list(
         map(
@@ -52,7 +53,7 @@ def tokenize(s: str) -> List[str]:
     )
 
 
-def identify(toks: List[str], prefix: str) -> List[Token]:  # noqa: D103
+def identify(toks: list[str], prefix: str) -> list[Token]:  # noqa: D103
     return [Token(text=text, id=f"{prefix}{i}") for i, text in enumerate(toks)]
 
 
@@ -61,7 +62,7 @@ class TokenAt(TypedDict):  # noqa: D101
     offset: int
 
 
-def token_at(tokens: List[str], character_offset: int) -> TokenAt:
+def token_at(tokens: list[str], character_offset: int) -> TokenAt:
     """Return token at the given offset.
 
     >>> abc = ['012', '3456', '789']

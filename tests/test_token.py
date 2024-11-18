@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from parallel_corpus.text_token import Token, identify, tokenize
@@ -23,7 +21,7 @@ def test_can_create_token() -> None:
         ("  apa bepa cepa  ", ["  apa ", "bepa ", "cepa  "]),
     ],
 )
-def test_tokenize(text: str, expected: List[str], snapshot) -> None:
+def test_tokenize(text: str, expected: list[str], snapshot) -> None:
     actual = tokenize(text)
 
     assert actual == expected
