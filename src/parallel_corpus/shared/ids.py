@@ -1,7 +1,7 @@
 """Ids."""
 
 import re
-from typing import Iterable
+from collections.abc import Iterable
 
 DIGITS = re.compile(r"\d+")
 

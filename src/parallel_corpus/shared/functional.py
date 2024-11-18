@@ -1,6 +1,7 @@
 """Functional utilities."""
 
-from typing import Callable, Sequence, TypeVar
+from collections.abc import Sequence
+from typing import Callable, TypeVar
 
 A = TypeVar("A")
 

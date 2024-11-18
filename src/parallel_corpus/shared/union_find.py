@@ -4,7 +4,7 @@ import abc
 import functools
 import json
 from dataclasses import dataclass
-from typing import Callable, Dict, Generic, List, Optional, Tuple, TypeVar
+from typing import Callable, Generic, Optional, TypeVar
 
 from typing_extensions import Self
 
@@ -23,13 +23,13 @@ class UnionFindOperations(abc.ABC, Generic[A]):
         """Make these belong to the same group."""
 
     @abc.abstractmethod
-    def unions(self, xs: List[A]) -> None:
+    def unions(self, xs: list[A]) -> None:
         """Make these belong to the same group."""
 
 
 class UnionFind(UnionFindOperations[int]):  # noqa: D101
-    def __init__(self, *, rev: Optional[List[int]] = None) -> None:  # noqa: D107
-        self._rev: List[int] = rev or []
+    def __init__(self, *, rev: Optional[list[Optional[int]]] = None) -> None:  # noqa: D107
+        self._rev: list[Optional[int]] = rev or []
 
     def find(self, x: int) -> int:  # noqa: D102
         while x >= len(self._rev):
@@ -47,14 +47,14 @@ class UnionFind(UnionFindOperations[int]):  # noqa: D101
             self._rev[find_y] = find_x
         return find_x
 
-    def unions(self, xs: List[int]) -> None:  # noqa: D102
+    def unions(self, xs: list[int]) -> None:  # noqa: D102
         functools.reduce(self.union, xs, xs[0])
 
 
 @dataclass
 class Renumber(Generic[A]):  # noqa: D101
-    bw: Dict[str, int]
-    fw: Dict[int, A]
+    bw: dict[str, int]
+    fw: dict[int, A]
     i = 0
     serialize: Callable[[A], str]
 
@@ -76,7 +76,7 @@ class Renumber(Generic[A]):  # noqa: D101
 
 def renumber(
     serialize: Callable[[A], str] = json.dumps,
-) -> Tuple[Callable[[int], Optional[A]], Callable[[A], int]]:
+) -> tuple[Callable[[int], Optional[A]], Callable[[A], int]]:
     """Assign unique numbers to each distinct element.
 
     const {un, num} = Renumber()
@@ -111,7 +111,7 @@ class PolyUnionFind(Generic[A]):  # noqa: D101
     def union(self, x: A, y: A) -> Optional[A]:  # noqa: D102
         return self._renum.un(self._uf.union(self._renum.num(x), self._renum.num(y)))
 
-    def unions(self, xs: List[A]) -> None:  # noqa: D102
+    def unions(self, xs: list[A]) -> None:  # noqa: D102
         num_xs_0 = self._renum.num(xs[0])
         for x in xs[1:]:
             self._uf.union(num_xs_0, self._renum.num(x))

@@ -1,6 +1,6 @@
 """UniqueCheck."""
 
-from typing import Dict, Generic, TypeVar
+from typing import Generic, TypeVar
 
 S = TypeVar("S")
 
@@ -55,7 +55,7 @@ class Count(Generic[S]):
     """
 
     def __init__(self) -> None:  # noqa: D107
-        self.m: Dict[S, int] = {}
+        self.m: dict[S, int] = {}
 
     def get(self, s: S) -> int:  # noqa: D102
         return self.m.get(s) or 0

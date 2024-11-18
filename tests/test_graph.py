@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from parallel_corpus import graph, text_token
@@ -172,11 +170,11 @@ def test_graph_align() -> None:
     assert len(g_aligned.edges) == 2
 
 
-def show(g: graph.Graph) -> List[str]:
+def show(g: graph.Graph) -> list[str]:
     return [t.text for t in g.target]
 
 
-def show_source(g: graph.Graph) -> List[str]:
+def show_source(g: graph.Graph) -> list[str]:
     return [s.text for s in g.source]
 
 

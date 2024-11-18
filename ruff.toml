@@ -1,5 +1,7 @@
 line-length = 97
 
+target-version = "py39"
+
 [lint]
 select = [
     "A",    # flake8-builtins

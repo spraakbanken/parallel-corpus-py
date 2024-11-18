@@ -1,8 +1,9 @@
 """Diffs."""
 
 import enum
+from collections.abc import Generator
 from itertools import starmap
-from typing import Any, Callable, Dict, Generator, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Callable, Generic, Optional, TypeVar, Union
 
 import diff_match_patch as dmp_module
 from typing_extensions import Self
@@ -46,8 +47,8 @@ class Change(Generic[A, B]):  # noqa: D101
     def inserted(cls, b: B) -> Self:  # noqa: D102
         return cls(ChangeType.INSERTED, b=b)
 
-    def model_dump(self) -> Dict[str, Union[int, A, B]]:  # noqa: D102
-        out: Dict[str, Union[int, A, B]] = {
+    def model_dump(self) -> dict[str, Union[int, A, B]]:  # noqa: D102
+        out: dict[str, Union[int, A, B]] = {
             "change": int(self.change),
         }
         if self.a is not None:
@@ -94,17 +95,17 @@ def char_stream() -> Generator[str, None, None]:
 
 
 def hdiff(  # noqa: D103
-    xs: List[A],
-    ys: List[B],
+    xs: list[A],
+    ys: list[B],
     a_cmp: Callable[[A], str] = str,
     b_cmp: Callable[[B], str] = str,
-) -> List[Change[A, B]]:
-    to: Dict[str, str] = {}
-    a_from: Dict[str, List[A]] = {}
-    b_from: Dict[str, List[B]] = {}
+) -> list[Change[A, B]]:
+    to: dict[str, str] = {}
+    a_from: dict[str, list[A]] = {}
+    b_from: dict[str, list[B]] = {}
     chars = char_stream()
 
-    def assign(c: C, c_cmp: Callable[[C], str], c_from: Dict[str, List[C]]) -> str:
+    def assign(c: C, c_cmp: Callable[[C], str], c_from: dict[str, list[C]]) -> str:
         s = c_cmp(c)
         u = to.get(s)
         if u is None:
@@ -147,7 +148,7 @@ def hdiff(  # noqa: D103
     return out
 
 
-def token_diff(s1: str, s2: str) -> List[Tuple[int, str]]:  # noqa: D103
+def token_diff(s1: str, s2: str) -> list[tuple[int, str]]:  # noqa: D103
     d = dmp.diff_main(s1, s2)
     dmp.diff_cleanupSemantic(d)
     return d

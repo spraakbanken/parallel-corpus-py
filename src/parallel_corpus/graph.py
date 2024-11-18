@@ -4,8 +4,9 @@ import copy
 import itertools
 import logging
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, TypedDict, TypeVar
+from typing import Optional, TypedDict, TypeVar
 
 import parallel_corpus.shared.ranges
 import parallel_corpus.shared.str_map
@@ -33,24 +34,24 @@ class Edge:
     # a copy of the identifier used in the edges object of the graph
     id: str
     # these are ids to source and target tokens
-    ids: List[str]
+    ids: list[str]
     # labels on this edge
-    labels: List[str]
+    labels: list[str]
     # is this manually or automatically aligned
     manual: bool
     comment: Optional[str] = None
 
 
-Edges = Dict[str, Edge]
+Edges = dict[str, Edge]
 
 
 @dataclass
-class Graph(SourceTarget[List[Token]]):  # noqa: D101
+class Graph(SourceTarget[list[Token]]):  # noqa: D101
     edges: Edges
     comment: Optional[str] = None
 
     def copy_with_updated_side_and_edges(  # noqa: D102
-        self, side: Side, new_tokens: List[Token], edges: Edges
+        self, side: Side, new_tokens: list[Token], edges: Edges
     ) -> "Graph":
         source = self.source if side == Side.target else new_tokens
         target = new_tokens if side == Side.target else self.target
@@ -65,8 +66,8 @@ def next_id(g: Graph) -> int:
 
 
 def edge(
-    ids: List[str],
-    labels: List[str],
+    ids: list[str],
+    labels: list[str],
     *,
     comment: Optional[str] = None,
     manual: bool = False,
@@ -82,7 +83,7 @@ def edge(
     )
 
 
-def edge_record(es: Iterable[Edge]) -> Dict[str, Edge]:
+def edge_record(es: Iterable[Edge]) -> dict[str, Edge]:
     return {e.id: e for e in es}
 
 
@@ -96,7 +97,7 @@ def init_with_source_and_target(source: str, target: str, *, manual: bool = Fals
     )
 
 
-def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
+def init_from(tokens: list[str], *, manual: bool = False) -> Graph:
     return align(
         Graph(
             source=text_token.identify(tokens, "s"),
@@ -109,7 +110,7 @@ def init_from(tokens: List[str], *, manual: bool = False) -> Graph:
 
 
 def init_from_source_and_target(
-    source: List[str], target: List[str], *, manual: bool = False
+    source: list[str], target: list[str], *, manual: bool = False
 ) -> Graph:
     source_tokens = text_token.identify(source, "s")
     target_tokens = text_token.identify(target, "t")
@@ -129,12 +130,12 @@ def init_from_source_and_target(
 
 class TextLabels(TypedDict):
     text: str
-    labels: List[str]
+    labels: list[str]
 
 
-def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
+def from_unaligned(st: SourceTarget[list[TextLabels]]) -> Graph:
     """Initialize a graph from unaligned tokens."""
-    edges: Dict[str, Edge] = {}
+    edges: dict[str, Edge] = {}
 
     def proto_token_to_token(tok: TextLabels, i: int, prefix: str) -> Token:
         id_ = f"{prefix}{i}"
@@ -142,7 +143,7 @@ def from_unaligned(st: SourceTarget[List[TextLabels]]) -> Graph:
         edges[id_] = e
         return Token(tok["text"], id_)
 
-    def proto_tokens_to_tokens(toks: List[TextLabels], side: Side) -> List[Token]:
+    def proto_tokens_to_tokens(toks: list[TextLabels], side: Side) -> list[Token]:
         return [
             proto_token_to_token(tok, i, "s" if side == Side.source else "t")
             for i, tok in enumerate(toks)
@@ -207,7 +208,7 @@ def align(g: Graph) -> Graph:
             c.a is not None and c.b is not None and c.a.id is not None and c.b.id is not None
         ):
             uf.union(c.a.id, c.b.id)
-    proto_edges: Dict[str, Edge] = {k: e for k, e in g.edges.items() if e.manual}
+    proto_edges: dict[str, Edge] = {k: e for k, e in g.edges.items() if e.manual}
     first: UniqueCheck[str] = UniqueCheck()
 
     def update_edges(tokens, _side) -> None:  # noqa: ANN001
@@ -232,7 +233,7 @@ def rearrange(g: Graph, begin: int, end: int, dest: int) -> Graph:
     return align(unaligned_rearrange(g, begin, end, dest))
 
 
-def target_text(g: SourceTarget[List[text_token.Text]]) -> str:
+def target_text(g: SourceTarget[list[text_token.Text]]) -> str:
     return text_token.text(g.target)
 
 
@@ -263,21 +264,21 @@ class CharIdPair:
     id: Optional[str] = None
 
 
-def to_char_ids(token: Token) -> List[CharIdPair]:
+def to_char_ids(token: Token) -> list[CharIdPair]:
     return parallel_corpus.shared.str_map.str_map(
         token.text,
         lambda char, _i: CharIdPair(char=char, id=None if char == " " else token.id),
     )
 
 
-def edge_map(g: Graph) -> Dict[str, Edge]:
+def edge_map(g: Graph) -> dict[str, Edge]:
     """Map from token ids to edges.
 
     Args:
         g (Graph): the Graph to build the edge map from.
 
     Returns:
-        Dict[str, Edge]: a map from token ids to edges
+        dict[str, Edge]: a map from token ids to edges
     """
     edges = {}
     for e in g.edges.values():
@@ -353,7 +354,7 @@ def get_side_text(g: Graph, side: Side) -> str:
     return text_token.text(g.get_side(side))
 
 
-def get_side_texts(g: Graph, side: Side) -> List[str]:
+def get_side_texts(g: Graph, side: Side) -> list[str]:
     return text_token.texts(g.get_side(side))
 
 
